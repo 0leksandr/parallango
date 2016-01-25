@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace AppBundle\Entity\Language;
 
-class Language
+use AppBundle\Entity\Identifiable;
+
+class Language extends Identifiable
 {
-    /** @var int */
-    private $id;
     /** @var string */
     private $code;
 
@@ -15,16 +15,8 @@ class Language
      */
     public function __construct($id, $code)
     {
-        $this->id = $id;
+        parent::__construct($id);
         $this->code = $code;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

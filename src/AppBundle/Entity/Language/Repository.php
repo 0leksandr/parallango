@@ -2,9 +2,12 @@
 
 namespace AppBundle\Entity\Language;
 
-use Doctrine\DBAL\Connection;
+use AppBundle\Entity\AbstractRepository;
+use AppBundle\Entity\Identifiable;
+use AppBundle\Entity\Language;
+use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
-class Repository
+class Repository extends AbstractRepository
 {
     /** @var Connection */
     private $dbal;
@@ -19,11 +22,14 @@ class Repository
     
     public function getByCode($code)
     {
-        $stmt = $this->dbal->prepare(
-            <<<'SQL'
-            SELECT 1
-            FROM `_languages`
-SQL
-        );
+    }
+
+    /**
+     * @param int[] $ids
+     * @return Identifiable[]
+     */
+    protected function fetch(array $ids)
+    {
+        throw new MethodNotImplementedException(__METHOD__);
     }
 }
