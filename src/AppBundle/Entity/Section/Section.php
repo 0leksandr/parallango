@@ -4,11 +4,11 @@ namespace AppBundle\Entity\Section;
 
 use AppBundle\Entity\Identifiable;
 use AppBundle\Entity\Language\Language;
-use AppBundle\Entity\Language\Translatable;
+use AppBundle\Entity\Language\MultiTranslation;
 
 class Section extends Identifiable
 {
-    /** @var Translatable */
+    /** @var MultiTranslation */
     private $title;
 
     /**

@@ -4,7 +4,7 @@ namespace AppBundle\Entity\Language;
 
 use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 
-class Translatable
+class MultiTranslation
 {
     /** @var string[] [$langCode => $name, ] */
     private $texts = [];

@@ -3,33 +3,41 @@
 namespace AppBundle\Entity\Language;
 
 use AppBundle\Entity\AbstractRepository;
-use AppBundle\Entity\Identifiable;
-use AppBundle\Entity\Language;
-use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
 class Repository extends AbstractRepository
 {
-    /** @var Connection */
-    private $dbal;
+    /**
+     * @return string
+     */
+    protected function getEntityClass()
+    {
+        return Language::class;
+    }
 
     /**
-     * @param Connection $dbal
+     * @return string[]
      */
-    public function __construct(Connection $dbal)
+    protected function constructorMapping()
     {
-        $this->dbal = $dbal;
+        return ['id', 'code'];
     }
-    
+
+    /**
+     * @param string $code
+     * @return Language
+     */
     public function getByCode($code)
     {
-    }
-
-    /**
-     * @param int[] $ids
-     * @return Identifiable[]
-     */
-    protected function fetch(array $ids)
-    {
-        throw new MethodNotImplementedException(__METHOD__);
+        return $this->getOneByQuery(
+            <<<'SQL'
+            SELECT *
+            FROM languages
+            WHERE code = :code
+SQL
+            ,
+            [
+                'code' => $code,
+            ]
+        );
     }
 }
