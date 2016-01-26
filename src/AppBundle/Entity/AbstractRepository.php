@@ -36,7 +36,7 @@ abstract class AbstractRepository
      * @param array $data
      * @return Identifiable
      */
-    private function createByData(array $data)
+    protected function createByData(array $data)
     {
         $constructorArgs = [];
         foreach ($this->constructorMapping() as $fieldName) {
@@ -124,7 +124,7 @@ abstract class AbstractRepository
     /**
      * @param Identifiable $entity
      */
-    private function keep(Identifiable $entity)
+    protected function keep(Identifiable $entity)
     {
         $this->entities[$entity->getId()] = $entity;
     }
