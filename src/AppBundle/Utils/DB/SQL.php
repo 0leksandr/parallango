@@ -2,200 +2,265 @@
 
 namespace AppBundle\Utils\DB;
 
-use DateTimeImmutable;
-use Doctrine\DBAL\ConnectionException;
-use mysqli;
-use mysqli_result;
-use mysqli_stmt;
 use PDO;
-use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
+use PDOStatement;
 
 class SQL
 {
-    /** @var mysqli */
-    private static $mysqli;
+    /** @var PDO */
+    private $pdo;
 
-    private static function __construct()
+    public function __construct()
     {
-        self::$mysqli = new mysqli('localhost', 'root', '', 'parallango');
-    }
-
-    public static function __destruct()
-    {
-        self::$mysqli->close();
-    }
-
-    /**
-     * @return mysqli
-     */
-    private static function getMysqli()
-    {
-        if (self::$mysqli === null) {
-            new self();
-        }
-        return self::$mysqli;
+        $this->pdo = new PDO(
+            'mysql:host=localhost;dbname=parallango;charset=utf8',
+            'root',
+            '',
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        );
     }
 
     /**
      * @param string $query
      * @param array $params
-     * @return bool|mysqli_result
-     * @throws ConnectionException
      */
-    private static function query($query, array $params)
+    public function execute($query, array $params = [])
     {
-        if ($error=mysqli_connect_error()) {
-            throw new ConnectionException(sprintf(
-                'Connect Error (%d) %s',
-                mysqli_connect_errno(),
-                $error
-            ));
+        $this->getExecutedStmt($query, $params);
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @return array|null
+     */
+    public function getArray($query, array $params = [])
+    {
+        if (($stmt = $this->getExecutedStmt($query, $params)) === null) {
+            return null;
+        }
+        return self::getArrayByStmt($stmt);
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @return array|null
+     */
+    public function getRow($query, array $params = [])
+    {
+        if (($stmt = $this->getExecutedStmt($query,$params)) === null) {
+            return null;
+        }
+        return self::fetchNextRow($stmt, self::getColumnTypes($stmt));
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @param int|string $indexOrTitle
+     * @return array|null
+     */
+    public function getColumn(
+        $query,
+        array $params = [],
+        $indexOrTitle = 0
+    ) {
+        if (($stmt = $this->getExecutedStmt($query, $params)) === null) {
+            return null;
+        }
+        $array = self::getArrayByStmt($stmt);
+        $indexOrTitle = self::getColumnIndex($stmt, $indexOrTitle);
+        $column = [];
+        foreach ($array as $row) {
+            $column[] = array_values($row)[$indexOrTitle];
+        }
+        return $column;
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @param int|string $indexOrTitle
+     * @return mixed|null
+     * @throws DBException
+     */
+    public function getSingle(
+        $query,
+        array $params = [],
+        $indexOrTitle = 0
+    ) {
+        if (($stmt = $this->getExecutedStmt($query, $params)) === null) {
+            return null;
+        }
+        $indexOrTitle = self::getColumnIndex($stmt, $indexOrTitle);
+        $cell = $stmt->fetchColumn($indexOrTitle);
+
+        return self::convertCell(
+            $cell,
+            self::getColumnTypes($stmt)[$indexOrTitle]
+        );
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @return PDOStatement|null
+     * @throws DBException
+     */
+    private function getExecutedStmt($query, array $params)
+    {
+        self::replaceManually($query, $params);
+
+        $stmt = $this->pdo->prepare($query);
+        if ($stmt === false) {
+            throw new DBException();
         }
 
-        $stmt = self::getMysqli()->prepare($query);
         foreach ($params as $paramName => $paramValue) {
             self::bindParam($stmt, $paramName, $paramValue);
         }
-        $res = $stmt->get_result();
 
-        $error = self::getMysqli()->error;
-        if (!empty($error)) {
-//            exit(sprintf(
-//                'SQL error in query [%s].<br>error #%d: %s',
-//                $query,
-//                self::getMysqli()->errno,
-//                $error
-//            )); //why Exceptions doesn't work??
-            exit(__FILE__.":".__LINE__);
+        if (!$stmt->execute()) {
+            throw new DBException();
         }
 
-        return $res;
+        if ($stmt->rowCount() === 0) {
+            return null;
+        }
+
+        return $stmt;
     }
 
     /**
-     * @param string $query
-     * @param array $params
-     * @return bool
-     */
-    public static function execute($query, array $params = [])
-    {
-        return (bool)self::query($query, $params);
-    }
-
-    /**
-     * @param string $query
-     * @param array $params
+     * @param PDOStatement $stmt
      * @return array
      */
-    public static function toArray($query, array $params = [])
+    private static function getArrayByStmt(PDOStatement $stmt)
     {
+        $types = self::getColumnTypes($stmt);
         $array = [];
-        if ($res = self::query($query, $params)) {
-            $types = self::getRowTypes($res);
-            while ($row = mysqli_fetch_assoc($res)) {
-                $newRow = [];
-                $index = 0;
-                foreach ($row as $column => $cell) {
-                    $newRow[$column] = self::convertCell(
-                        $cell,
-                        $types[$index++]
-                    );
-                }
-                $array[] = $newRow;
-            }
+        while ($row = self::fetchNextRow($stmt, $types)) {
+            $array[] = $row;
         }
         return $array;
     }
 
     /**
-     * @param string $query
-     * @param array $params
-     * @return string
+     * @param PDOStatement $stmt
+     * @param string[] $types
+     * @return array|null
      */
-    private static function convertParams($query, array $params)
+    private static function fetchNextRow(PDOStatement $stmt, array $types)
     {
-        $stmt = self::getMysqli()->prepare($query);
-        if (in_array('string', array_map('gettype', array_keys($params)))) {
-            foreach ($params as $paramName => $paramValue) {
-
-            }
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            return self::rowToArray($row, $types);
         }
-        foreach ($params as $paramName => $paramValue) {
-            $query = str_replace(
-                ':' . $paramName,
-                '\'' . str_replace(
-                    ['\\', '\''],
-                    ['\\\\', '\\\''],
-                    $paramValue
-                ) . '\'',
-                $query
+        return null;
+    }
+
+    /**
+     * @param array $row
+     * @param string[] $types
+     * @return array
+     */
+    private static function rowToArray(array $row, array $types)
+    {
+        $newRow = [];
+        $index = 0;
+        foreach ($row as $column => $cell) {
+            $newRow[$column] = self::convertCell(
+                $cell,
+                $types[$index++]
             );
         }
-        return $query;
+        return $newRow;
     }
 
     /**
-     * @param mysqli_stmt $stmt
-     * @param string $paramName
-     * @param $paramValue
+     * @param PDOStatement $stmt
+     * @param int|string $indexOrTitle
+     * @return int
+     * @throws DBException
      */
-    private static function bindParam(
-        mysqli_stmt $stmt,
-        $paramName,
-        $paramValue
-    ) {
-        $type = null;
-        switch (gettype($paramValue)) {
-            case 'null':
-                $type = PDO::PARAM_NULL;
-                break;
-            case 'string':
-                $type = PDO::PARAM_STR;
-                break;
-            case 'bool':
-                $type = PDO::PARAM_BOOL;
-                break;
-            case 'integer':
-                $type = PDO::PARAM_INT;
-                break;
-            case 'float':
-                $type = PDO::PARAM_STMT;
-                $paramValue = (string)$paramValue;
-                break;
-            case 'array':
-                $type = PDO::PARAM_STMT;
-                $paramValue = sprintf(
-                    'ARRAY[%s]',
-                    implode(', ', array_map(function ($elem) {
-                        throw new \Exception();
-                    }, $paramValue))
-                );
-                break;
-            default:
-                throw new InvalidTypeException();
+    private static function getColumnIndex(PDOStatement $stmt, $indexOrTitle)
+    {
+        if (is_string($indexOrTitle)) {
+            $columnNames = self::getColumnNames($stmt);
+            $keys = array_keys($columnNames, $indexOrTitle);
+            if (count($keys) !== 1) {
+                throw new DBException(sprintf(
+                    'Column name "%s" is invalid',
+                    $indexOrTitle
+                ));
+            }
+            $indexOrTitle = $keys[0];
+            return $indexOrTitle;
         }
-        $stmt->bind_param(':' . $paramName, $paramValue, $type);
+        return $indexOrTitle;
     }
 
     /**
-     * @param mysqli_result $result
+     * @param PDOStatement $stmt
      * @return string[]
      */
-    private static function getRowTypes(mysqli_result $result)
+    private static function getColumnTypes(PDOStatement $stmt)
     {
-        $types = [];
-        if ($result->field_count > 0) {
-            foreach (range(0, $result->field_count - 1) as $index) {
-                $types[] = $result->fetch_field_direct($index)->type;
+        return self::getColumnMetas($stmt, 'native_type');
+    }
+
+    /**
+     * @param PDOStatement $stmt
+     * @return string[]
+     */
+    private static function getColumnNames(PDOStatement $stmt)
+    {
+        return self::getColumnMetas($stmt, 'name');
+    }
+
+    /**
+     * @param PDOStatement $stmt
+     * @param string $metaName
+     * @return string[]
+     */
+    private static function getColumnMetas(PDOStatement $stmt, $metaName)
+    {
+        $metas = [];
+        if (($nrColumns = $stmt->columnCount()) > 0) {
+            foreach (range(0, $nrColumns - 1) as $index) {
+                $metas[] = $stmt->getColumnMeta($index)[$metaName];
             }
         }
-        return $types;
+        return $metas;
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     */
+    private static function replaceManually(&$query, array &$params)
+    {
+        foreach ($params as $paramName => $paramValue) {
+            $type = gettype($paramValue);
+            if (
+                $type === 'double'
+                || ($type === 'object' && $paramValue instanceof Literal)
+            ) {
+                $query = str_replace(
+                    ':' . $paramName,
+                    (string)$paramValue,
+                    $query
+                );
+                unset($params[$paramName]);
+            }
+        }
     }
 
     /**
      * @param string $oldValue
      * @param string $newType
      * @return mixed
+     * @throws DBException
      */
     private static function convertCell($oldValue, $newType)
     {
@@ -203,18 +268,47 @@ class SQL
             return null;
         }
         switch ($newType) {
-            case 'int':
+            case 'LONGLONG':
                 return (int)$oldValue;
-            case 'float':
-                return floatval($oldValue);
-            case 'double':
-                return doubleval($oldValue);
-            case 'datetime':
-                return new DateTimeImmutable($oldValue);
-            case 'varchar':
+            case 'VAR_STRING':
                 return (string)$oldValue;
+            case 'NEWDECIMAL':
+                return floatval($oldValue);
             default:
-                throw new InvalidTypeException();
+                throw new DBException(sprintf('Invalid type: %s', $newType));
         }
+    }
+
+    /**
+     * @param PDOStatement $stmt
+     * @param string $paramName
+     * @param $paramValue
+     * @throws DBException
+     */
+    private static function bindParam(
+        PDOStatement $stmt,
+        $paramName,
+        $paramValue
+    ) {
+        $pdoType = null;
+        $phpType = gettype($paramValue);
+        switch ($phpType) {
+            case 'NULL':
+                $pdoType = PDO::PARAM_NULL;
+                break;
+            case 'string':
+                $pdoType = PDO::PARAM_STR;
+                break;
+            case 'boolean':
+                $pdoType = PDO::PARAM_BOOL;
+                break;
+            case 'integer':
+                $pdoType = PDO::PARAM_INT;
+                break;
+            default:
+                throw new DBException(sprintf('Invalid type: %s', $phpType));
+        }
+
+        $stmt->bindValue(':' . $paramName, $paramValue, $pdoType);
     }
 }

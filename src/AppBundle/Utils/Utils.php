@@ -19,3 +19,15 @@ function mpull(array $array, $methodName, $preserveKeys = true)
 
     return $res;
 }
+
+/**
+ * @param array $ar
+ * @return mixed|null
+ */
+function head(array $ar)
+{
+    foreach ($ar as $value) {
+        return $value;
+    }
+    return null;
+}
