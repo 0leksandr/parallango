@@ -25,15 +25,14 @@ SQL
                 id SERIAL PRIMARY KEY,
                 property_name VARCHAR(32)
             );
-
-            INSERT INTO author_language_property (property_name)
-            VALUES
-                ('pseudonym'),
-                ('first name'),
-                ('last name'),
-                ('wiki page');
 SQL
         );
+        foreach (AuthorLanguageProperty::getAll() as $property) {
+            $this->execute("
+                INSERT INTO author_language_property (property_name)
+                VALUES ('$property')
+            ");
+        }
 
         $this->execute(
             <<<'SQL'
@@ -41,8 +40,8 @@ SQL
                 id SERIAL PRIMARY KEY,
                 author_id INTEGER NOT NULL REFERENCES authors(id),
                 language_id INTEGER NOT NULL REFERENCES languages(id),
-                property_id INTEGER NOT NULL REFERENCES
-                        author_language_property(id),
+                property_id INTEGER NOT NULL
+                    REFERENCES author_language_property(id),
                 property_value VARCHAR(128)
             );
 SQL
