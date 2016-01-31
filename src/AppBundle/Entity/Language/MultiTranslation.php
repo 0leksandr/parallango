@@ -26,9 +26,22 @@ class MultiTranslation
      * @param string $text
      * @return $this
      */
-    public function setValue(Language $language, $text)
+    public function addValue(Language $language, $text)
     {
         $this->texts[$language->getCode()] = $text;
         return $this;
+    }
+
+    /**
+     * @param Text[] $texts
+     * @return MultiTranslation
+     */
+    public static function fromTexts(array $texts)
+    {
+        $self = new self();
+        foreach ($texts as $text) {
+            $self->addValue($text->getLanguage(), $text->getText());
+        }
+        return $self;
     }
 }

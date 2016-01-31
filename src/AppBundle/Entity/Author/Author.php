@@ -8,15 +8,30 @@ use AppBundle\Entity\Language\MultiTranslation;
 
 class Author extends Identifiable
 {
+    const PSEUDONYM = 'pseudonym';
+    const FIRST_NAME = 'first name';
+    const LAST_NAME = 'last name';
+    const WIKI_PAGE = 'wiki page';
+
     /** @var MultiTranslation */
-    private $firstName;
+    private $name;
+
+    /**
+     * @param int $id
+     * @param MultiTranslation $name
+     */
+    public function __construct($id, MultiTranslation $name)
+    {
+        parent::__construct($id);
+        $this->name = $name;
+    }
 
     /**
      * @param Language $language
      * @return string
      */
-    public function getFirstName(Language $language)
+    public function getName(Language $language)
     {
-        return $this->firstName->getValue($language);
+        return $this->name->getValue($language);
     }
 }
