@@ -8,7 +8,7 @@ abstract class Identifiable
     private $id;
 
     /**
-     * @param $id
+     * @param int $id
      */
     public function __construct($id)
     {
