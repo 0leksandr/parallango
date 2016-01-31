@@ -10,7 +10,7 @@ _errors:
     resource: "@TwigBundle/Resources/config/routing/errors.xml"
     prefix:   /_error
 
-tets:
+test:
     path: /test
     defaults: { _controller: AppBundle:Test:index }
 
