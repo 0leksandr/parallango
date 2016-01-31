@@ -1,6 +1,5 @@
 <?php
 
-use AppBundle\Entity\Author\AuthorLanguageProperty;
 use Phinx\Migration\AbstractMigration;
 
 class CreateAuthorsTable extends AbstractMigration
@@ -27,10 +26,16 @@ SQL
             );
 SQL
         );
-        foreach (AuthorLanguageProperty::getAll() as $property) {
+        $authorLanguageProperties = [
+            'name' => 'name',
+            'pseudonym' => 'pseudonym',
+            'first_name' => 'first name',
+            'last_name' => 'last name',
+        ];
+        foreach ($authorLanguageProperties as $propertyName) {
             $this->execute("
                 INSERT INTO author_language_property (property_name)
-                VALUES ('$property')
+                VALUES ('$propertyName')
             ");
         }
 
@@ -46,27 +51,66 @@ SQL
             );
 SQL
         );
-        foreach (AuthorLanguageProperty::getAll() as $propertyName) {
-            $query = <<<'SQL'
-                INSERT INTO author_language_properties (
-                    author_id,
-                    language_id,
-                    property_id,
-                    property_value
-                )
-                SELECT
-                    a.id,
-                    l.id,
-                    alp.id,
-                    a.:old_authors_column_name
-                FROM
-                    `_authors` a
-                    JOIN languages l
-                    JOIN author_language_property alp
-                WHERE
-                    l.code = 'en'
-                    AND alp.property_name = :property_name;
-SQL;
+        foreach ($authorLanguageProperties as $oldColumnName => $propertyName) {
+            foreach (['en', 'uk', 'ru'] as $languageCode) {
+                $this->execute("
+                    INSERT INTO author_language_properties (
+                        author_id,
+                        language_id,
+                        property_id,
+                        property_value
+                    )
+                    SELECT
+                        a.id,
+                        l.id,
+                        alp.id,
+                        a." . ($oldColumnName . '_' . $languageCode) . "
+                    FROM
+                        `_authors` a
+                        JOIN languages l
+                        JOIN author_language_property alp
+                    WHERE
+                        l.code = '$languageCode'
+                        AND alp.property_name = '$propertyName';
+                ");
+            }
         }
+
+        $this->execute(
+            <<<'SQL'
+            INSERT INTO author_language_property (property_name)
+            VALUES ('wiki page');
+
+            INSERT INTO author_language_properties (
+                author_id,
+                language_id,
+                property_id,
+                property_value
+            )
+            SELECT
+                a.id,
+                l.id,
+                alp.id,
+                a.wiki_page_ru
+            FROM
+                _authors a
+                JOIN languages l
+                JOIN author_language_property alp
+            WHERE
+                l.code = 'ru'
+                AND alp.property_name = 'wiki page';
+SQL
+        );
+    }
+
+    public function down()
+    {
+        $this->execute(
+            <<<'SQL'
+            DROP TABLE author_language_properties;
+            DROP TABLE author_language_property;
+            DROP TABLE authors;
+SQL
+        );
     }
 }
