@@ -1,11 +1,15 @@
 <?php
 
+use AppBundle\Entity\Author\Author;
+use Phinx\Db\Adapter\MysqlAdapter;
 use Phinx\Migration\AbstractMigration;
 
 class CreateAuthorsTable extends AbstractMigration
 {
     public function up()
     {
+        $pdo = $this->getPdo();
+
         $this->execute(
             <<<'SQL'
             CREATE TABLE authors (
@@ -26,17 +30,15 @@ SQL
             );
 SQL
         );
-        $authorLanguageProperties = [
-            'name' => 'name',
-            'pseudonym' => 'pseudonym',
-            'first_name' => 'first name',
-            'last_name' => 'last name',
-        ];
-        foreach ($authorLanguageProperties as $propertyName) {
-            $this->execute("
-                INSERT INTO author_language_property (property_name)
-                VALUES ('$propertyName')
-            ");
+        $stmt = $pdo->prepare(
+            <<<'SQL'
+            INSERT INTO author_language_property (property_name)
+            VALUES (:property_name)
+SQL
+        );
+        foreach (Author::getPropertyNames() as $propertyName) {
+            $stmt->bindValue('property_name', $propertyName);
+            $stmt->execute();
         }
 
         $this->execute(
@@ -51,56 +53,34 @@ SQL
             );
 SQL
         );
-        foreach ($authorLanguageProperties as $oldColumnName => $propertyName) {
+        foreach (Author::getPropertyNames() as $propertyName) {
             foreach (['en', 'uk', 'ru'] as $languageCode) {
-                $this->execute("
-                    INSERT INTO author_language_properties (
-                        author_id,
-                        language_id,
-                        property_id,
-                        property_value
-                    )
-                    SELECT
-                        a.id,
-                        l.id,
-                        alp.id,
-                        a." . ($oldColumnName . '_' . $languageCode) . "
-                    FROM
-                        `_authors` a
-                        JOIN languages l
-                        JOIN author_language_property alp
-                    WHERE
-                        l.code = '$languageCode'
-                        AND alp.property_name = '$propertyName';
-                ");
+                if ($propertyName !== 'wiki_page' || $languageCode === 'ru') {
+                    $oldColumn = $propertyName . '_' . $languageCode;
+                    $this->execute("
+                        INSERT INTO author_language_properties (
+                            author_id,
+                            language_id,
+                            property_id,
+                            property_value
+                        )
+                        SELECT
+                            a.id,
+                            l.id,
+                            alp.id,
+                            a." . $oldColumn . "
+                        FROM
+                            `_authors` a
+                            JOIN languages l
+                            JOIN author_language_property alp
+                        WHERE
+                            l.code = '$languageCode'
+                            AND alp.property_name = '$propertyName'
+                            AND a." . $oldColumn . " <> '';
+                    ");
+                }
             }
         }
-
-        $this->execute(
-            <<<'SQL'
-            INSERT INTO author_language_property (property_name)
-            VALUES ('wiki page');
-
-            INSERT INTO author_language_properties (
-                author_id,
-                language_id,
-                property_id,
-                property_value
-            )
-            SELECT
-                a.id,
-                l.id,
-                alp.id,
-                a.wiki_page_ru
-            FROM
-                _authors a
-                JOIN languages l
-                JOIN author_language_property alp
-            WHERE
-                l.code = 'ru'
-                AND alp.property_name = 'wiki page';
-SQL
-        );
     }
 
     public function down()
@@ -112,5 +92,18 @@ SQL
             DROP TABLE authors;
 SQL
         );
+    }
+
+    /**
+     * @return PDO
+     * @throws Exception
+     */
+    private function getPdo()
+    {
+        $adapter = $this->getAdapter();
+        if ($adapter instanceof MysqlAdapter) {
+            return $adapter->getConnection();
+        }
+        throw new Exception('Not Mysql Adapter');
     }
 }

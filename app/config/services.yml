@@ -7,3 +7,7 @@ services:
     language:
         class: AppBundle\Entity\Language\LanguageRepository
         arguments: [@sql]
+
+    author:
+        class: AppBundle\Entity\Author\AuthorRepository
+        arguments: [@sql, @language]

@@ -246,12 +246,20 @@ class SQL
                 $type === 'double'
                 || ($type === 'object' && $paramValue instanceof Literal)
             ) {
+                $newValue = (string)$paramValue;
+            }
+            if ($type === 'array') {
+                $newValue = '\'' . implode('\',\'', $paramValue) . '\'';
+            }
+
+            if (isset($newValue)) {
                 $query = str_replace(
                     ':' . $paramName,
-                    (string)$paramValue,
+                    $newValue,
                     $query
                 );
                 unset($params[$paramName]);
+                unset($newValue);
             }
         }
     }
