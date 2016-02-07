@@ -18,6 +18,5 @@ class TestController extends Controller
 
     private function test()
     {
-        var_dump($this->get('author')->getByIds([1, 2]));
     }
 }

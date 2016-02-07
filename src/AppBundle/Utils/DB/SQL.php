@@ -279,6 +279,7 @@ class SQL
             case 'LONGLONG':
                 return (int)$oldValue;
             case 'VAR_STRING':
+            case 'BLOB':
                 return (string)$oldValue;
             case 'NEWDECIMAL':
                 return floatval($oldValue);
