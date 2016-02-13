@@ -8,15 +8,19 @@ class Language extends Identifiable
 {
     /** @var string */
     private $code;
+    /** @var bool */
+    private $isActive;
 
     /**
      * @param int $id
      * @param string $code
+     * @param bool $isActive
      */
-    public function __construct($id, $code)
+    public function __construct($id, $code, $isActive)
     {
         parent::__construct($id);
         $this->code = $code;
+        $this->isActive = $isActive;
     }
 
     /**
@@ -25,6 +29,14 @@ class Language extends Identifiable
     public function getCode()
     {
         return $this->code;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->isActive;
     }
 }
 

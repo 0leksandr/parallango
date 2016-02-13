@@ -68,14 +68,7 @@ SQL
      */
     protected function createByData(array $data)
     {
-        $ids = array_unique(ipull($data, 'id'));
-        if (count($ids) !== 1) {
-            throw new \Exception(sprintf(
-                'Incorrect data provided for %s object',
-                Author::class
-            ));
-        }
-        $author = new Author(head($ids));
+        $author = new Author($this->getIdFromMultipleRows($data));
         foreach ($data as $row) {
             $language =
                 $this->languageRepository->getByCode($row['language_code']);

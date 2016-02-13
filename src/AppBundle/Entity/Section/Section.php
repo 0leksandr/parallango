@@ -12,11 +12,31 @@ class Section extends Identifiable
     private $title;
 
     /**
+     * @param int $id
+     */
+    public function __construct($id)
+    {
+        parent::__construct($id);
+        $this->title = new MultiTranslation();
+    }
+
+    /**
      * @param Language $language
      * @return string
      */
     public function getTitle(Language $language)
     {
         return $this->title->getValue($language);
+    }
+
+    /**
+     * @param Language $language
+     * @param string $title
+     * @return $this
+     */
+    public function addTitle(Language $language, $title)
+    {
+        $this->title->addValue($language, $title);
+        return $this;
     }
 }

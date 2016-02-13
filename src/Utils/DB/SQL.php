@@ -291,12 +291,15 @@ class SQL
         }
         switch ($newType) {
             case 'LONGLONG':
+            case 'LONG':
                 return (int)$oldValue;
             case 'VAR_STRING':
             case 'BLOB':
                 return (string)$oldValue;
             case 'NEWDECIMAL':
                 return floatval($oldValue);
+            case 'TINY':
+                return (bool)$oldValue;
             default:
                 throw new DBException(sprintf('Invalid type: %s', $newType));
         }

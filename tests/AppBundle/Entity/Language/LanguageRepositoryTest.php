@@ -28,4 +28,19 @@ class LanguageRepositoryTest extends \PHPUnit_Framework_TestCase
             count(array_unique(mpull($languages, 'getCode')))
         );
     }
+
+    /**
+     * @test
+     */
+    public function thereShouldBeActiveLanguages()
+    {
+        $nrActiveLanguages = array_sum(array_map(
+            function (Language $language) {
+                return $language->isActive();
+            },
+            $this->SUT->getAll()
+        ));
+        $this->assertGreaterThan(0, $nrActiveLanguages);
+        $this->assertEquals($nrActiveLanguages, count($this->SUT->getActive()));
+    }
 }

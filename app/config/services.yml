@@ -16,3 +16,7 @@ services:
     author:
         class: AppBundle\Entity\Author\AuthorRepository
         arguments: [@sql, @language]
+
+    section:
+        class: AppBundle\Entity\Section\SectionRepository
+        arguments: [@sql, @language]
