@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Utils\DB;
+namespace Utils\DB;
 
 class DBException extends \Exception
 {

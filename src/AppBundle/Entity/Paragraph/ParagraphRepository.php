@@ -3,7 +3,7 @@
 namespace AppBundle\Entity\Paragraph;
 
 use AppBundle\Entity\Book\Book;
-use AppBundle\Utils\DB\SQL;
+use Utils\DB\SQL;
 
 class ParagraphRepository
 {

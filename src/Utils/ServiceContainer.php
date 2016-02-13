@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Utils;
+namespace Utils;
 
 use AppKernel;
 use Symfony\Component\DependencyInjection\ContainerInterface;

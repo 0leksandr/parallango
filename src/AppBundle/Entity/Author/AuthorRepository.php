@@ -4,9 +4,9 @@ namespace AppBundle\Entity\Author;
 
 use AppBundle\Entity\AbstractRepository;
 use AppBundle\Entity\Language\LanguageRepository;
-use AppBundle\Utils\DB\SQL;
+use Utils\DB\SQL;
 
-require_once __DIR__ . '/../../Utils/Utils.php';
+require_once __DIR__ . '/../../../Utils/Utils.php';
 
 class AuthorRepository extends AbstractRepository
 {

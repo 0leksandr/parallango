@@ -2,7 +2,7 @@ parameters:
 
 services:
     sql:
-        class: AppBundle\Utils\DB\SQL
+        class: Utils\DB\SQL
 
     language:
         class: AppBundle\Entity\Language\LanguageRepository

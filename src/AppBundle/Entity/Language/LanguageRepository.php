@@ -3,7 +3,7 @@
 namespace AppBundle\Entity\Language;
 
 use AppBundle\Entity\AbstractRepository;
-use AppBundle\Utils\DB\SQL;
+use Utils\DB\SQL;
 
 class LanguageRepository extends AbstractRepository
 {

@@ -2,9 +2,9 @@
 
 namespace AppBundle\Entity\Language;
 
-use AppBundle\Utils\ServiceContainer;
+use Utils\ServiceContainer;
 
-require_once __DIR__ . '/../../../../src/AppBundle/Utils/Utils.php';
+require_once __DIR__ . '/../../../../src/Utils/Utils.php';
 
 class LanguageRepositoryTest extends \PHPUnit_Framework_TestCase
 {
