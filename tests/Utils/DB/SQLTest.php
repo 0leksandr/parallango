@@ -3,6 +3,7 @@
 namespace Utils\DB;
 
 use PHPUnit_Framework_TestCase;
+use Utils\ServiceContainer;
 
 class SQLTest extends PHPUnit_Framework_TestCase
 {
@@ -11,7 +12,7 @@ class SQLTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->SUT = new SQL();
+        $this->SUT = ServiceContainer::get('test')->get('sql');
     }
 
     /**

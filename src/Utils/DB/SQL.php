@@ -10,12 +10,26 @@ class SQL
     /** @var PDO */
     private $pdo;
 
-    public function __construct()
+    /**
+     * @param string $host
+     * @param string $dbname
+     * @param string $user
+     * @param string $pass
+     */
+    public function __construct($host, $dbname, $user, $pass)
     {
+        $driver = 'mysql';
+        $charset = 'utf8';
         $this->pdo = new PDO(
-            'mysql:host=localhost;dbname=parallango;charset=utf8',
-            'root',
-            '',
+            sprintf(
+                '%s:host=%s;dbname=%s;charset=%s',
+                $driver,
+                $host,
+                $dbname,
+                $charset
+            ),
+            $user,
+            $pass,
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
         );
     }

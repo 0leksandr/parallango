@@ -13,7 +13,7 @@ class LanguageRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->SUT = ServiceContainer::get()->get('language');
+        $this->SUT = ServiceContainer::get('test')->get('language');
     }
 
     /**

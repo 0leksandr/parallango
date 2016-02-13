@@ -7,22 +7,24 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ServiceContainer
 {
-    /** @var ContainerInterface */
-    private static $serviceContainer;
+    /** @var ContainerInterface[] */
+    private static $serviceContainers = [];
 
     /**
+     * @param string $environment
      * @return ContainerInterface
      */
-    public static function get()
+    public static function get($environment)
     {
-        if (self::$serviceContainer === null) {
-            $kernel = new AppKernel('dev', true);
+
+        $container = &self::$serviceContainers[$environment];
+        if (!isset($container)) {
+            $kernel = new AppKernel($environment, true);
 //            $kernel->loadClassCache();
             $kernel->boot();
-            self::$serviceContainer =
-                $kernel->getContainer()->get('service_container');
+            $container = $kernel->getContainer()->get('service_container');
         }
 
-        return self::$serviceContainer;
+        return $container;
     }
 }

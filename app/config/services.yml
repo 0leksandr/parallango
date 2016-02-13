@@ -3,6 +3,11 @@ parameters:
 services:
     sql:
         class: Utils\DB\SQL
+        arguments:
+            - %database_host%
+            - %database_name%
+            - %database_user%
+            - %database_password%
 
     language:
         class: AppBundle\Entity\Language\LanguageRepository
