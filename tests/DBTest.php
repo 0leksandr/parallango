@@ -20,6 +20,11 @@ class DBTest extends PHPUnit_Framework_TestCase
                 'section_id' => 'sections.id',
                 'language_id' => 'languages.id',
             ],
+            'books' => [
+                'author_id' => 'authors.id',
+                'language_id' => 'languages.id',
+                'section_id' => 'sections.id',
+            ],
         ] as $table => $columns) {
             foreach ($columns as $column => $foreignColumn) {
                 list($foreignTable, $foreignColumn) =

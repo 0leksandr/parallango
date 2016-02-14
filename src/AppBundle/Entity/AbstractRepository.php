@@ -16,15 +16,6 @@ abstract class AbstractRepository
     abstract protected function createByData(array $data);
 
     /**
-     * @param array $data
-     * @return Identifiable
-     */
-    protected function getByData(array $data)
-    {
-        return $this->getByIdData($data['id'], $data);
-    }
-
-    /**
      * @param int $id
      * @param array $data
      * @return Identifiable
@@ -35,6 +26,9 @@ abstract class AbstractRepository
             return $this->entities[$id];
         }
         $entity = $this->createByData($data);
+
+        $this->checkId($id, $entity);
+
         $this->entities[$entity->getId()] = $entity;
 
         return $entity;
@@ -77,5 +71,21 @@ abstract class AbstractRepository
             ));
         }
         return head($ids);
+    }
+
+    /**
+     * @param int $id
+     * @param Identifiable $entity
+     * @throws Exception
+     */
+    protected function checkId($id, Identifiable $entity)
+    {
+        if ($id !== $entity->getId()) {
+            throw new Exception(sprintf(
+                'Requested id %d !== generated %d',
+                $id,
+                $entity->getId()
+            ));
+        }
     }
 }

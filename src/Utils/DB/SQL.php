@@ -119,10 +119,10 @@ class SQL
     /**
      * @param string $query
      * @param array $params
-     * @return PDOStatement|null
+     * @return PDOStatement
      * @throws DBException
      */
-    private function getExecutedStmt($query, array $params)
+    private function prepare($query, array $params = [])
     {
         self::replaceManually($query, $params);
 
@@ -134,6 +134,19 @@ class SQL
         foreach ($params as $paramName => $paramValue) {
             self::bindParam($stmt, $paramName, $paramValue);
         }
+
+        return $stmt;
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @return PDOStatement|null
+     * @throws DBException
+     */
+    private function getExecutedStmt($query, array $params)
+    {
+        $stmt = $this->prepare($query, $params);
 
         if (!$stmt->execute()) {
             throw new DBException();

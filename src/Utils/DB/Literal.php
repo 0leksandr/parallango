@@ -12,7 +12,7 @@ class Literal
      */
     public function __construct($stmt)
     {
-        $this->stmt = $stmt;
+        $this->stmt = (string)$stmt;
     }
 
     /**

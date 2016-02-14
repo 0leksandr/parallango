@@ -2,16 +2,15 @@
 
 namespace AppBundle\Entity\Section;
 
-use AppBundle\Entity\AbstractRepository;
+use AppBundle\Entity\AbstractSqlRepository;
 use AppBundle\Entity\Language\LanguageRepository;
 use Utils\DB\SQL;
 
-require_once __DIR__ . '/../../../Utils/Utils.php';
-
-class SectionRepository extends AbstractRepository
+/**
+ * @method Section getById($id)
+ */
+class SectionRepository extends AbstractSqlRepository
 {
-    /** @var SQL */
-    private $sql;
     /** @var LanguageRepository */
     private $languageRepository;
 
@@ -23,7 +22,7 @@ class SectionRepository extends AbstractRepository
         SQL $sql,
         LanguageRepository $languageRepository
     ) {
-        $this->sql = $sql;
+        parent::__construct($sql);
         $this->languageRepository = $languageRepository;
     }
 
@@ -32,23 +31,12 @@ class SectionRepository extends AbstractRepository
      */
     public function getAll()
     {
-        $data = $this->sql->getArray(
+        return $this->getBySelectIdsQuery(
             <<<'SQL'
-            SELECT
-                s.id,
-                st.language_id,
-                st.title
-            FROM
-                sections s
-                JOIN section_titles st
-                    ON s.id = st.section_id
+            SELECT id
+            FROM sections
 SQL
         );
-        $sections = [];
-        foreach(igroup($data, 'id') as $id => $data) {
-            $sections[] = $this->getByIdData($id, $data);
-        }
-        return $sections;
     }
 
     /**
@@ -64,5 +52,24 @@ SQL
             $section->addTitle($language, $row['title']);
         }
         return $section;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDataByIdsQuery()
+    {
+        return <<<'SQL'
+            SELECT
+                s.id,
+                st.language_id,
+                st.title
+            FROM
+                sections s
+                JOIN section_titles st
+                    ON s.id = st.section_id
+            WHERE
+                s.id IN (:ids)
+SQL;
     }
 }

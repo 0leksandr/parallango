@@ -22,4 +22,17 @@ abstract class Identifiable
     {
         return $this->id;
     }
+
+    /**
+     * @param Identifiable[] $entities
+     * @return Identifiable[]
+     */
+    public static function map(array $entities)
+    {
+        $map = [];
+        foreach ($entities as $entity) {
+            $map[$entity->getId()] = $entity;
+        }
+        return $map;
+    }
 }

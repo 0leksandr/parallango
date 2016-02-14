@@ -2,16 +2,15 @@
 
 namespace AppBundle\Entity\Author;
 
-use AppBundle\Entity\AbstractRepository;
+use AppBundle\Entity\AbstractSqlRepository;
 use AppBundle\Entity\Language\LanguageRepository;
 use Utils\DB\SQL;
 
-require_once __DIR__ . '/../../../Utils/Utils.php';
-
-class AuthorRepository extends AbstractRepository
+/**
+ * @method Author getById($id)
+ */
+class AuthorRepository extends AbstractSqlRepository
 {
-    /** @var SQL */
-    private $sql;
     /** @var LanguageRepository */
     private $languageRepository;
 
@@ -23,48 +22,13 @@ class AuthorRepository extends AbstractRepository
         SQL $sql,
         LanguageRepository $languageRepository
     ) {
-        $this->sql = $sql;
+        parent::__construct($sql);
         $this->languageRepository = $languageRepository;
-    }
-
-    /**
-     * @param int[] $ids
-     * @return Author[]
-     */
-    public function getByIds(array $ids)
-    {
-        $data = $this->sql->getArray(
-            <<<'SQL'
-            SELECT
-                a.id,
-                alp1.property_name,
-                l.code AS language_code,
-                alp2.property_value
-            FROM
-                authors a
-                JOIN author_language_property alp1
-                JOIN languages l
-                JOIN author_language_properties alp2
-                    ON a.id = alp2.author_id
-                    AND alp1.id = alp2.property_id
-                    AND l.id = alp2.language_id
-            WHERE a.id IN (:ids)
-SQL
-            ,
-            ['ids' => $ids]
-        );
-        $authors = [];
-        $grouped = igroup($data, 'id');
-        foreach ($grouped as $id => $data) {
-            $authors[] = $this->getByIdData($id, $data);
-        }
-        return $authors;
     }
 
     /**
      * @param array $data
      * @return Author
-     * @throws \Exception
      */
     protected function createByData(array $data)
     {
@@ -79,5 +43,29 @@ SQL
             );
         }
         return $author;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDataByIdsQuery()
+    {
+        return <<<'SQL'
+            SELECT
+                a.id,
+                alp1.property_name,
+                l.code AS language_code,
+                alp2.property_value
+            FROM
+                authors a
+                JOIN author_language_property alp1
+                JOIN languages l
+                JOIN author_language_properties alp2
+                    ON a.id = alp2.author_id
+                    AND alp1.id = alp2.property_id
+                    AND l.id = alp2.language_id
+            WHERE
+                a.id IN (:ids)
+SQL;
     }
 }
