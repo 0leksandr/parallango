@@ -7,35 +7,23 @@ use AppBundle\Entity\Identifiable;
 class Paragraph extends Identifiable
 {
     /** @var string */
-    private $textLeft;
-    /** @var string */
-    private $textRight;
+    private $text;
 
     /**
      * @param int $id
      * @param string $textLeft
-     * @param string $textRight
      */
-    public function __construct($id, $textLeft, $textRight)
+    public function __construct($id, $textLeft)
     {
         parent::__construct($id);
-        $this->textLeft = $textLeft;
-        $this->textRight = $textRight;
+        $this->text = $textLeft;
     }
 
     /**
      * @return string
      */
-    public function getTextLeft()
+    public function getText()
     {
-        return $this->textLeft;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTextRight()
-    {
-        return $this->textRight;
+        return $this->text;
     }
 }

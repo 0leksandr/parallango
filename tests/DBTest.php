@@ -14,24 +14,27 @@ class DBTest extends PHPUnit_Framework_TestCase
         $sql = ServiceContainer::get('test')->get('sql');
         foreach ([
             'author_language_properties' => [
-                'author_id' => ['authors.id', true],
-                'language_id' => ['languages.id', true],
-                'property_id' => ['author_language_property.id', true],
+                'author_id' => ['authors', 'id', true],
+                'language_id' => ['languages', 'id', true],
+                'property_id' => ['author_language_property', 'id', true],
             ],
             'section_titles' => [
-                'section_id' => ['sections.id', true],
-                'language_id' => ['languages.id', true],
+                'section_id' => ['sections', 'id', true],
+                'language_id' => ['languages', 'id', true],
             ],
             'books' => [
-                'author_id' => ['authors.id', true],
-                'language_id' => ['languages.id', true],
-                'section_id' => ['sections.id', false],
+                'author_id' => ['authors', 'id', true],
+                'language_id' => ['languages', 'id', true],
+                'section_id' => ['sections', 'id', false],
+            ],
+            'parallangos' => [
+                'left_book_id' => ['books', 'id', true],
+                'right_book_id' => ['books', 'id', true],
             ],
         ] as $table => $columns) {
-            foreach ($columns as $column => $foreignColumn) {
-                list($foreignColumn, $notNull) = $foreignColumn;
-                list($foreignTable, $foreignColumn) =
-                    explode('.', $foreignColumn);
+            foreach ($columns as $column => $foreign) {
+                list($foreignTable, $foreignColumn, $notNull) = $foreign;
+
                 $thisValues = $sql->getColumn("
                     SELECT $column
                     FROM $table
@@ -46,6 +49,9 @@ class DBTest extends PHPUnit_Framework_TestCase
                         return $value !== null;
                     });
                 }
+
+                $this->assertGreaterThan(0, count($thisValues));
+                $this->assertGreaterThan(0, count($foreignValues));
 
                 $nonPresent = array_diff($thisValues, $foreignValues);
                 $this->assertEquals(

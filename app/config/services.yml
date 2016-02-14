@@ -24,3 +24,7 @@ services:
     book:
         class: AppBundle\Entity\Book\BookRepository
         arguments: [@sql, @author, @language, @section]
+
+    parallango:
+        class: AppBundle\Entity\Parallango\ParallangoRepository
+        arguments: [@sql, @book]
