@@ -1,3 +1,6 @@
+imports:
+    - { resource: parameters.yml }
+
 parameters:
     database_host: localhost
     database_name: parallango

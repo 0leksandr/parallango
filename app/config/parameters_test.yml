@@ -1,5 +1,2 @@
-parameters:
-    database_host: localhost
-    database_name: parallango
-    database_user: root
-    database_password: null
+imports:
+    - { resource: parameters_dev.yml }
