@@ -48,8 +48,9 @@ abstract class AbstractRepository
             foreach ($fields as $field) {
                 if (!isset($row[$field])) {
                     throw new Exception(sprintf(
-                        'Missing required field %s',
-                        $field
+                        'Missing required field %s. Available fields: %s',
+                        $field,
+                        implode(', ', array_keys($row))
                     ));
                 }
             }

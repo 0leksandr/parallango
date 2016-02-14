@@ -20,3 +20,7 @@ services:
     section:
         class: AppBundle\Entity\Section\SectionRepository
         arguments: [@sql, @language]
+
+    book:
+        class: AppBundle\Entity\Book\BookRepository
+        arguments: [@sql, @author, @language, @section]

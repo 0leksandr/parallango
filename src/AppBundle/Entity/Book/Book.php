@@ -5,7 +5,6 @@ namespace AppBundle\Entity\Book;
 use AppBundle\Entity\Author\Author;
 use AppBundle\Entity\Identifiable;
 use AppBundle\Entity\Language\Language;
-use AppBundle\Entity\Paragraph\Paragraph;
 use AppBundle\Entity\Section\Section;
 
 class Book extends Identifiable
@@ -16,30 +15,28 @@ class Book extends Identifiable
     private $author;
     /** @var Language */
     private $language;
-    /** @var Section */
+    /** @var Section|null */
     private $section;
-    /** @var Paragraph[] */
-    private $paragraphs = [];
 
     /**
      * @param int $id
+     * @param string $title
      * @param Author $author
      * @param Language $language
-     * @param Section $section
-     * @param string $title
+     * @param Section|null $section
      */
     public function __construct(
         $id,
+        $title,
         Author $author,
         Language $language,
-        Section $section,
-        $title
+        Section $section = null
     ) {
         parent::__construct($id);
+        $this->title = $title;
         $this->author = $author;
         $this->language = $language;
         $this->section = $section;
-        $this->title = $title;
     }
 
     /**
@@ -67,18 +64,10 @@ class Book extends Identifiable
     }
 
     /**
-     * @return Section
+     * @return Section|null
      */
     public function getSection()
     {
         return $this->section;
-    }
-
-    /**
-     * @return Paragraph[]
-     */
-    public function getParagraphs()
-    {
-        return $this->paragraphs;
     }
 }

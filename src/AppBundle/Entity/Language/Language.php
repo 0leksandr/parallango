@@ -6,6 +6,10 @@ use AppBundle\Entity\Identifiable;
 
 class Language extends Identifiable
 {
+    const EN = 'en';
+    const UK = 'uk';
+    const RU = 'ru';
+
     /** @var string */
     private $code;
     /** @var bool */

@@ -12,7 +12,7 @@ class CreateBooksTable extends AbstractMigration
                 id SERIAL PRIMARY KEY,
                 author_id INTEGER NOT NULL REFERENCES authors(id),
                 language_id INTEGER NOT NULL REFERENCES languages(id),
-                section_id INTEGER NOT NULL REFERENCES sections(id),
+                section_id INTEGER NULL REFERENCES sections(id),
                 title VARCHAR(256),
                 original_id INTEGER NOT NULL
             );
@@ -31,10 +31,18 @@ SQL
                 SELECT
                     b.author,
                     b.lang_$lang,
-                    b.section,
+                    s.id,
                     b.title_$lang,
                     b.original_id_$lang
-                FROM `_books` b
+                FROM
+                    `_books` b
+                    LEFT JOIN sections s
+                        ON b.section = s.id
+                GROUP BY
+                    b.author,
+                    b.lang_$lang,
+                    b.title_$lang,
+                    b.original_id_$lang
             ");
         }
     }

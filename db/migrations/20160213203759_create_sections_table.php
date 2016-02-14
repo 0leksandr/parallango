@@ -15,7 +15,11 @@ class CreateSectionsTable extends AbstractMigration
 
             INSERT INTO sections(id)
             SELECT id
-            FROM `_sections`;
+            FROM `_sections`
+            WHERE
+                title_en <> ''
+                OR title_uk <> ''
+                OR title_ru <> '';
 
             CREATE TABLE section_titles (
                 id SERIAL PRIMARY KEY,

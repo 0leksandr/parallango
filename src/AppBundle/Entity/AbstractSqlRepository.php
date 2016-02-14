@@ -6,6 +6,8 @@ use Exception;
 use Utils\DB\Literal;
 use Utils\DB\SQL;
 
+require_once __DIR__ . '/../../Utils/Utils.php';
+
 abstract class AbstractSqlRepository extends AbstractRepository
 {
     /** @var SQL */
@@ -27,7 +29,6 @@ abstract class AbstractSqlRepository extends AbstractRepository
     /**
      * @param int[] $ids
      * @return Identifiable[]
-     * @throws Exception
      */
     public function getByIds(array $ids)
     {
@@ -35,6 +36,12 @@ abstract class AbstractSqlRepository extends AbstractRepository
             $this->getDataByIdsQuery(),
             ['ids' => $ids]
         );
+        if ($data === null) {
+            $this->throwEx(sprintf(
+                'Can not get rows for ids: %s',
+                implode(', ', $ids)
+            ));
+        }
         $entities = $this->getByData($data);
 
         $this->checkIds($ids, $entities);
@@ -66,29 +73,50 @@ abstract class AbstractSqlRepository extends AbstractRepository
     }
 
     /**
+     * @param $query
+     * @return Identifiable
+     */
+    protected function getSingleBySelectIdQuery($query)
+    {
+        $entities = $this->getBySelectIdsQuery($query);
+        if (count($entities) !== 1) {
+            $this->throwEx(sprintf(
+                'Expected 1 entity, got %d',
+                count($entities)
+            ));
+        }
+
+        return head($entities);
+    }
+
+    /**
      * @param array $array
      * @return array
-     * @throws Exception
      */
     protected function getRowFromArray(array $array)
     {
         if (($nrRows = count($array)) !== 1) {
-            throw new Exception(sprintf(
-                'Bad number of rows for %s: %d',
-                get_class($this),
+            $this->throwEx(sprintf(
+                'Bad number of rows: %d',
                 $nrRows
             ));
         }
 
         $row = head($array);
         if (!is_array($row)) {
-            throw new Exception(sprintf(
-                'Row is not an array in %s',
-                get_class($this)
-            ));
+            $this->throwEx('Row is not an array');
         }
 
         return $row;
+    }
+
+    /**
+     * @param string $message
+     * @throws Exception
+     */
+    protected function throwEx($message)
+    {
+        throw new Exception(sprintf('%s: %s', get_class($this), $message));
     }
 
     /**
@@ -108,16 +136,14 @@ abstract class AbstractSqlRepository extends AbstractRepository
     /**
      * @param int[] $ids
      * @param Identifiable[] $entities
-     * @throws Exception
      */
     private function checkIds(array $ids, array $entities)
     {
         if ($missingIds = array_diff($ids, mpull($entities, 'getId'))) {
-            throw new Exception(
-                '%s can not find entities with ids: %s',
-                get_class($this),
+            $this->throwEx(sprintf(
+                'Can not find entities with ids: %s',
                 implode(', ', $missingIds)
-            );
+            ));
         }
     }
 }

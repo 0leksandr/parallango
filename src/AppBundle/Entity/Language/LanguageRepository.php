@@ -13,9 +13,9 @@ class LanguageRepository extends AbstractSqlRepository
      * @param string $code
      * @return Language
      */
-    public function getByCode($code)
+    public function get($code)
     {
-        return $this->getBySelectIdsQuery("
+        return $this->getSingleBySelectIdQuery("
             SELECT id
             FROM languages
             WHERE code = '$code'

@@ -34,11 +34,9 @@ class AuthorRepository extends AbstractSqlRepository
     {
         $author = new Author($this->getIdFromMultipleRows($data));
         foreach ($data as $row) {
-            $language =
-                $this->languageRepository->getByCode($row['language_code']);
             $author->set(
                 $row['property_name'],
-                $language,
+                $this->languageRepository->getById($row['language_id']),
                 $row['property_value']
             );
         }
@@ -53,17 +51,17 @@ class AuthorRepository extends AbstractSqlRepository
         return <<<'SQL'
             SELECT
                 a.id,
-                alp1.property_name,
-                l.code AS language_code,
-                alp2.property_value
+                alp.property_name,
+                alps.language_id,
+                alps.property_value
             FROM
                 authors a
-                JOIN author_language_property alp1
+                JOIN author_language_property alp
                 JOIN languages l
-                JOIN author_language_properties alp2
-                    ON a.id = alp2.author_id
-                    AND alp1.id = alp2.property_id
-                    AND l.id = alp2.language_id
+                JOIN author_language_properties alps
+                    ON a.id = alps.author_id
+                    AND alp.id = alps.property_id
+                    AND l.id = alps.language_id
             WHERE
                 a.id IN (:ids)
 SQL;
