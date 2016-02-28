@@ -1,7 +1,7 @@
 <phpunit
          backupGlobals="false"
          colors="true"
-         bootstrap="../app/autoload.php"
+         bootstrap="../../app/autoload.php"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
@@ -17,7 +17,7 @@
     </testsuites>
 
     <php>
-        <server name="KERNEL_DIR" value="../app/" />
+        <server name="KERNEL_DIR" value="../../app/" />
     </php>
 
     <filter>

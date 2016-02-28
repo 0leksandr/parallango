@@ -68,7 +68,7 @@ SQL
         return <<<'SQL'
             SELECT id, code, is_active
             FROM languages
-            WHERE id IN (:ids)
+            WHERE id IN :ids
 SQL;
     }
 }

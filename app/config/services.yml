@@ -28,3 +28,7 @@ services:
     parallango:
         class: AppBundle\Entity\Parallango\ParallangoRepository
         arguments: [@sql, @book]
+
+    page:
+        class: AppBundle\Entity\Page\PageRepository
+        arguments: [@sql, %books_root%]

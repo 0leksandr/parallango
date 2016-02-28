@@ -87,7 +87,7 @@ SQL
                 section_id,
                 title
             FROM books
-            WHERE id IN (:ids)
+            WHERE id IN :ids
 SQL;
     }
 }

@@ -12,3 +12,4 @@ parameters:
     secret: 654b577903930152b553cc36ae930a32c852a652
 
     books_root: "/mnt/Data/localhost/parallango/base/[hdd]/merged books"
+#    books_root: "/media/oleksandr/Hard Disk Drive/parallango/merged/books"

@@ -60,13 +60,14 @@ abstract class AbstractSqlRepository extends AbstractRepository
 
     /**
      * @param string $query
+     * @param array $params
      * @return Identifiable[]
      */
-    protected function getBySelectIdsQuery($query)
+    protected function getBySelectIdsQuery($query, array $params = [])
     {
         $data = $this->sql->getArray(
             $this->getDataByIdsQuery(),
-            ['ids' => new Literal($query)]
+            array_merge(['ids' => new Literal('(' . $query . ')')], $params)
         );
 
         return $this->getByData($data);

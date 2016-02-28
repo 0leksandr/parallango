@@ -87,3 +87,31 @@ function igroup(array $array, $key)
     }
     return $res;
 }
+
+/**
+ * @param string $pattern
+ * @param string $subject
+ * @return array|null
+ */
+function _preg_match($pattern, $subject)
+{
+    $matches = [];
+    if (!preg_match($pattern, $subject, $matches)) {
+        return null;
+    }
+    return $matches;
+}
+
+/**
+ * @param string $pattern
+ * @param string $subject
+ * @return array|null
+ */
+function _preg_match_all($pattern, $subject)
+{
+    $matches = [];
+    if (!preg_match_all($pattern, $subject, $matches)) {
+        return null;
+    }
+    return $matches;
+}

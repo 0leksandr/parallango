@@ -69,7 +69,7 @@ SQL
                 LEFT JOIN section_titles st
                     ON s.id = st.section_id
             WHERE
-                s.id IN (:ids)
+                s.id IN :ids
 SQL;
     }
 }

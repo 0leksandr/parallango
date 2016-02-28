@@ -2,7 +2,7 @@
 
 use Utils\ServiceContainer;
 
-require_once __DIR__ . '/../src/Utils/Utils.php';
+require_once __DIR__ . '/../../src/Utils/Utils.php';
 
 class DBTest extends PHPUnit_Framework_TestCase
 {
@@ -31,16 +31,19 @@ class DBTest extends PHPUnit_Framework_TestCase
                 'left_book_id' => ['books', 'id', true],
                 'right_book_id' => ['books', 'id', true],
             ],
+            'paragraphs' => [
+                'parallango_id' => ['parallangos', 'id', true],
+            ],
         ] as $table => $columns) {
             foreach ($columns as $column => $foreign) {
                 list($foreignTable, $foreignColumn, $notNull) = $foreign;
 
                 $thisValues = $sql->getColumn("
-                    SELECT $column
+                    SELECT DISTINCT $column
                     FROM $table
                 ");
                 $foreignValues = $sql->getColumn("
-                    SELECT $foreignColumn
+                    SELECT DISTINCT $foreignColumn
                     FROM $foreignTable
                 ");
 
@@ -50,8 +53,16 @@ class DBTest extends PHPUnit_Framework_TestCase
                     });
                 }
 
-                $this->assertGreaterThan(0, count($thisValues));
-                $this->assertGreaterThan(0, count($foreignValues));
+                $this->assertGreaterThan(
+                    0,
+                    count($thisValues),
+                    'Table: ' . $table
+                );
+                $this->assertGreaterThan(
+                    0,
+                    count($foreignValues),
+                    'Table: ' . $foreignTable
+                );
 
                 $nonPresent = array_diff($thisValues, $foreignValues);
                 $this->assertEquals(

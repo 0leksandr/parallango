@@ -6,6 +6,9 @@ use AppBundle\Entity\AbstractSqlRepository;
 use AppBundle\Entity\Book\BookRepository;
 use Utils\DB\SQL;
 
+/**
+ * @method Parallango getById($id)
+ */
 class ParallangoRepository extends AbstractSqlRepository
 {
     /** @var BookRepository */
@@ -19,6 +22,19 @@ class ParallangoRepository extends AbstractSqlRepository
     {
         parent::__construct($sql);
         $this->bookRepository = $bookRepository;
+    }
+
+    /**
+     * @return Parallango[]
+     */
+    public function getAll()
+    {
+        return $this->getBySelectIdsQuery(
+            <<<'SQL'
+            SELECT id
+            FROM parallangos
+SQL
+        );
     }
 
     /**
@@ -46,7 +62,7 @@ class ParallangoRepository extends AbstractSqlRepository
                 left_book_id,
                 right_book_id
             FROM parallangos
-            WHERE id IN (:ids)
+            WHERE id IN :ids
 SQL;
     }
 }

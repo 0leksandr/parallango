@@ -63,7 +63,7 @@ class AuthorRepository extends AbstractSqlRepository
                     AND alp.id = alps.property_id
                     AND l.id = alps.language_id
             WHERE
-                a.id IN (:ids)
+                a.id IN :ids
 SQL;
     }
 }
