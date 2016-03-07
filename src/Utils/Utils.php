@@ -49,11 +49,11 @@ function ipull(array $array, $key, $preserveKeys = false)
 {
     $res = [];
     foreach ($array as $index => $item) {
-        $res[$index] = $item[$key];
-    }
-
-    if ($preserveKeys) {
-        $res = array_values($res);
+        if ($preserveKeys) {
+            $res[$index] = $item[$key];
+        } else {
+            $res[] = $item[$key];
+        }
     }
 
     return $res;
@@ -114,4 +114,20 @@ function _preg_match_all($pattern, $subject)
         return null;
     }
     return $matches;
+}
+
+/**
+ * array_mergev([[1, 2, 3], [4, 5], [], [6]]) = [1, 2, 3, 4, 5, 6]
+ *
+ * @param array[] $array
+ * @return array
+ */
+function array_mergev(array $array)
+{
+    // TODO: optimize
+    $res = [];
+    foreach ($array as $item) {
+        $res = array_merge($res, $item);
+    }
+    return $res;
 }

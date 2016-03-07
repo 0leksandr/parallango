@@ -1,6 +1,6 @@
 <?php
 
-namespace Utils\DB;
+namespace Utils\DB\Exception;
 
 class DBException extends \Exception
 {

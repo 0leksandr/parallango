@@ -29,6 +29,10 @@ services:
         class: AppBundle\Entity\Parallango\ParallangoRepository
         arguments: [@sql, @book]
 
+    page_size:
+        class: AppBundle\Entity\Page\PageSize\PageSizeRepository
+        arguments: [@sql]
+
     page:
         class: AppBundle\Entity\Page\PageRepository
         arguments: [@sql, %books_root%]

@@ -48,7 +48,7 @@ class SQLTest extends PHPUnit_Framework_TestCase
      * @param mixed $varValue
      * @param mixed|null $expectedReturnVar
      */
-    public function testSelectSomethingReturnsSame(
+    public function selectSomethingShouldReturnSame(
         $varValue,
         $expectedReturnVar = null
     ) {
@@ -157,16 +157,19 @@ SQL
                 'text' => 'test3',
             ],
         ];
-        $valuesWithoutKeys = array_map(function (array $array) {
-            return array_values($array);
-        }, $values);
         $this->SUT->execute(
             <<<'SQL'
             CREATE TEMPORARY TABLE test (
                 id INTEGER NOT NULL,
                 text TEXT NOT NULL
             );
-
+SQL
+        );
+        $valuesWithoutKeys = array_map(function (array $array) {
+            return array_values($array);
+        }, $values);
+        $this->SUT->execute(
+            <<<'SQL'
             INSERT INTO test (id, text)
             VALUES :values;
 SQL
@@ -208,5 +211,38 @@ SQL
                 ]
             )
         );
+    }
+
+    /**
+     * @test
+     */
+    public function testMultipleValuesRow()
+    {
+        $this->assertSame([
+            'res1' => 1,
+            'res2' => 2,
+            'res3' => 'test'
+        ], $this->SUT->getRow(
+            <<<'SQL'
+            SELECT
+                1 AS res1,
+                2 AS res2,
+                'test' AS res3
+SQL
+        ));
+    }
+
+    /**
+     * @test
+     */
+    public function testMultipleValuesColumn()
+    {
+        $this->assertSame([1, 2, 4], $this->SUT->getColumn(
+            <<<'SQL'
+            SELECT 1
+            UNION SELECT 2
+            UNION SELECT 4
+SQL
+        ));
     }
 }

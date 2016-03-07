@@ -31,9 +31,18 @@ class SQL
             $pass,
             [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_EMULATE_PREPARES => 1, // multiple queries
+                PDO::ATTR_EMULATE_PREPARES => 0, // multiple queries
             ]
         );
+    }
+
+    /**
+     * @param string $query
+     * @return Statement
+     */
+    public function prepare($query)
+    {
+        return new Statement($this->pdo, $query);
     }
 
     /**
@@ -95,7 +104,6 @@ class SQL
      * @param array $params
      * @param int|string $indexOrTitle
      * @return mixed
-     * @throws DBException
      */
     public function getSingle(
         $query,
@@ -109,11 +117,10 @@ class SQL
     }
 
     /**
-     * @param string $query
-     * @return Statement
+     * @return int
      */
-    public function prepare($query)
+    public function lastInsertId()
     {
-        return new Statement($this->pdo, $query);
+        return (int)$this->pdo->lastInsertId();
     }
 }

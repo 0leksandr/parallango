@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity\Page;
 
+use AppBundle\Entity\Page\PageSize\PageSize;
 use AppBundle\Entity\Parallango\Parallango;
 use Utils\DB\SQL;
 
@@ -24,45 +25,47 @@ class PageRepository
 
     /**
      * @param Parallango $parallango
-     * @param int $paragraphFrom
-     * @param int $paragraphTo
-     * @return Page
+     * @param PageSize $pageSize
+     * @return Page[]
      */
-    public function getByParallangoAndParagraphs(
+    public function getByParallangoAndPageSize(
         Parallango $parallango,
-        $paragraphFrom,
-        $paragraphTo
+        PageSize $pageSize
     ) {
-        $paragraphPositions = $this->sql->getColumn(
+        $paragraphs = $this->sql->getArray(
             <<<'SQL'
-            SELECT position_begin
-            FROM paragraphs
+            SELECT
+                p.order,
+                p.position_begin,
+                p.position_end
+            FROM
+                paragraphs p
+                JOIN materialized_pages mp
+                    ON mp.paragraph_id = p.id
             WHERE
-                parallango_id = :parallango_id
-                AND `order` = :paragraph_from
-
-            UNION
-
-            SELECT position_end
-            FROM paragraphs
-            WHERE
-                parallango_id = :parallango_id
-                AND `order` = :paragraph_to
+                p.parallango_id = :parallango_id
+                AND mp.page_size_id = :page_size_id
+            ORDER BY
+                p.order
 SQL
             ,
             [
                 'parallango_id' => $parallango->getId(),
-                'paragraph_from' => $paragraphFrom,
-                'paragraph_to' => $paragraphTo,
+                'page_size_id' => $pageSize->getId(),
             ]
         );
-        return $this->getSingle(
-            $parallango,
-            $paragraphFrom,
-            $paragraphTo,
-            $paragraphPositions[0],
-            $paragraphPositions[1]
-        );
+        $pages = [];
+        foreach (array_slice($paragraphs, 0, -1) as $index => $paragraphFrom) {
+            $paragraphTo = $paragraphs[$index + 1];
+            $pages[] = $this->create(
+                $parallango,
+                $paragraphFrom['order'],
+                $paragraphTo['order'],
+                $paragraphFrom['position_begin'],
+                $paragraphTo['position_end']
+            );
+        }
+        return $pages;
     }
 
     /**
@@ -73,7 +76,7 @@ SQL
      * @param int $textPositionTo
      * @return Page
      */
-    private function getSingle(
+    private function create(
         Parallango $parallango,
         $firstParagraph,
         $lastParagraph,

@@ -9,34 +9,39 @@ class DBTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function checkForeignKeys()
+    public function testForeignKeys()
     {
         $sql = ServiceContainer::get('test')->get('sql');
         foreach ([
             'author_language_properties' => [
-                'author_id' => ['authors', 'id', true],
-                'language_id' => ['languages', 'id', true],
-                'property_id' => ['author_language_property', 'id', true],
+                'author_id' => ['authors', 'id', true, true],
+                'language_id' => ['languages', 'id', true, false],
+                'property_id' => ['author_language_property', 'id', true, true],
             ],
             'section_titles' => [
-                'section_id' => ['sections', 'id', true],
-                'language_id' => ['languages', 'id', true],
+                'section_id' => ['sections', 'id', true, true],
+                'language_id' => ['languages', 'id', true, false],
             ],
             'books' => [
-                'author_id' => ['authors', 'id', true],
-                'language_id' => ['languages', 'id', true],
-                'section_id' => ['sections', 'id', false],
+                'author_id' => ['authors', 'id', true, true],
+                'language_id' => ['languages', 'id', true, false],
+                'section_id' => ['sections', 'id', false, true],
             ],
             'parallangos' => [
-                'left_book_id' => ['books', 'id', true],
-                'right_book_id' => ['books', 'id', true],
+                'left_book_id' => ['books', 'id', true, false],
+                'right_book_id' => ['books', 'id', true, false],
             ],
             'paragraphs' => [
-                'parallango_id' => ['parallangos', 'id', true],
+                'parallango_id' => ['parallangos', 'id', true, true],
+            ],
+            'materialized_pages' => [
+                'parallango_id' => ['parallangos', 'id', true, true],
+                'page_size_id' => ['page_sizes', 'id', true, null, true],
             ],
         ] as $table => $columns) {
             foreach ($columns as $column => $foreign) {
-                list($foreignTable, $foreignColumn, $notNull) = $foreign;
+                list($foreignTable, $foreignColumn, $notNull, $shouldMatchFully)
+                    = $foreign;
 
                 $thisValues = $sql->getColumn("
                     SELECT DISTINCT $column
@@ -64,19 +69,49 @@ class DBTest extends PHPUnit_Framework_TestCase
                     'Table: ' . $foreignTable
                 );
 
-                $nonPresent = array_diff($thisValues, $foreignValues);
-                $this->assertEquals(
-                    0,
-                    count($nonPresent),
-                    sprintf(
-                        '%s.%s has value %s, that is not present in %s.%s',
-                        $table,
-                        $column,
-                        head($nonPresent),
-                        $foreignTable,
-                        $foreignColumn
-                    )
-                );
+                $thisForeign = [
+                    'this' => [
+                        'table' => $table,
+                        'column' => $column,
+                        'values' => $thisValues,
+                    ],
+                    'foreign' => [
+                        'table' => $foreignTable,
+                        'column' => $foreignColumn,
+                        'values' => $foreignValues,
+                    ],
+                ];
+                $toTest = [
+                    [
+                        'left' => $thisForeign['this'],
+                        'right' => $thisForeign['foreign'],
+                    ],
+                ];
+                if ($shouldMatchFully) {
+                    $toTest[] = [
+                        'left' => $thisForeign['foreign'],
+                        'right' => $thisForeign['this'],
+                    ];
+                }
+                foreach ($toTest as $item) {
+                    $nonPresent = array_diff(
+                        $item['left']['values'],
+                        $item['right']['values']
+                    );
+                    $this->assertSame(
+                        0,
+                        count($nonPresent),
+                        sprintf(
+                            'Values in %s.%s, that are not present in %s.%s: '
+                                . '%s',
+                            $item['left']['table'],
+                            $item['left']['column'],
+                            $item['right']['table'],
+                            $item['right']['column'],
+                            implode(', ', $nonPresent)
+                        )
+                    );
+                }
             }
         }
     }
