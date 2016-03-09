@@ -1,6 +1,6 @@
 <?php
 
-namespace Base;
+namespace Base\Commands;
 
 use Exception;
 use Symfony\Component\Console\Command\Command;
@@ -13,8 +13,8 @@ use Utils\DB\SQL;
 use Utils\DB\ValuesList;
 use Utils\ServiceContainer;
 
-require_once __DIR__ . '/../../../../../scripts/config.php';
-require_once __DIR__ . '/../Utils/Utils.php';
+require_once __DIR__ . '/../../../../../../scripts/config.php';
+require_once __DIR__ . '/../../Utils/Utils.php';
 
 class ParseParagraphs extends Command
 {

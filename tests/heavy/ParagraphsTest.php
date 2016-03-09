@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../src/Utils/Utils.php';
 class ParagraphsTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * ~3min
+     * ~2.5min
      *
      * @test
      */

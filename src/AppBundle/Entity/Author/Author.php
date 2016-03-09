@@ -8,9 +8,10 @@ use AppBundle\Entity\Language\Language;
 class Author extends Identifiable
 {
     const NAME = 'name';
-    const PSEUDONYM = 'pseudonym';
-    const FIRST_NAME = 'first_name';
-    const LAST_NAME = 'last_name';
+    // TODO: do something with it
+//    const PSEUDONYM = 'pseudonym';
+//    const FIRST_NAME = 'first_name';
+//    const LAST_NAME = 'last_name';
     const WIKI_PAGE = 'wiki_page';
 
     /** @var array[] */
@@ -170,9 +171,9 @@ class Author extends Identifiable
     {
         return [
             self::NAME,
-            self::PSEUDONYM,
-            self::FIRST_NAME,
-            self::LAST_NAME,
+//            self::PSEUDONYM,
+//            self::FIRST_NAME,
+//            self::LAST_NAME,
             self::WIKI_PAGE,
         ];
     }

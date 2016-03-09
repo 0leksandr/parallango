@@ -4,7 +4,6 @@ namespace Utils\DB;
 
 use PDO;
 use PDOException;
-use PDOStatement;
 use Utils\DB\Exception\DBException;
 
 require_once __DIR__ . '/../Utils.php';
@@ -14,8 +13,6 @@ class Statement
     const MAX_LIMIT = 18446744073709551615;
     const MAX_NR_PARAMETERS = 65535;
 
-    /** @var PDOStatement */
-    private $statement;
     /** @var PDO */
     private $pdo;
     /** @var string */
@@ -40,6 +37,8 @@ class Statement
      */
     public function execute(array $params = [])
     {
+        $originalQuery = $this->query;
+
         $this->replaceLiterals($params);
 
         foreach ($params as $paramName => $paramValue) {
@@ -52,9 +51,9 @@ class Statement
             throw new DBException('Inconsistency in params names');
         }
         $this->checkMaxNrParams(count($this->paramsToBind));
-        $this->statement = $this->pdo->prepare($this->query);
+        $statement = $this->pdo->prepare($this->query);
         foreach ($this->paramsToBind as $param) {
-            $this->statement->bindValue(
+            $statement->bindValue(
                 $param['name'],
                 $param['value'],
                 $param['type']
@@ -62,7 +61,7 @@ class Statement
         }
 
         try {
-            $executed = $this->statement->execute();
+            $executed = $statement->execute();
         } catch (PDOException $ex) {
             throw new DBException(sprintf(
                 <<<'TEXT'
@@ -81,7 +80,10 @@ TEXT
             throw new DBException();
         }
 
-        return new Result($this->statement);
+        $this->query = $originalQuery;
+        $this->paramsToBind = [];
+
+        return new Result($statement);
     }
 
     /**

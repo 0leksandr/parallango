@@ -1,35 +1,15 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
+use Utils\PhinxMigration;
 
-class CreateParallangosTable extends AbstractMigration
+class CreateParallangosTable extends PhinxMigration
 {
-    public function up()
+    public function change()
     {
-        $this->execute(
-            <<<'SQL'
-            CREATE TABLE parallangos (
-                id SERIAL PRIMARY KEY,
-                left_book_id INTEGER NOT NULL REFERENCES books(id),
-                right_book_id INTEGER NOT NULL REFERENCES books(id)
-            );
-
-            INSERT INTO parallangos (id, left_book_id, right_book_id)
-            SELECT
-                id,
-                original_id_0,
-                original_id_1
-            FROM `_books`;
-SQL
-        );
-    }
-
-    public function down()
-    {
-        $this->execute(
-            <<<'SQL'
-            DROP TABLE parallangos;
-SQL
-        );
+        $this
+            ->table('parallangos')
+            ->addColumn('left_book_id', 'integer', ['references' => 'books'])
+            ->addColumn('right_book_id', 'integer', ['references' => 'books'])
+            ->create();
     }
 }

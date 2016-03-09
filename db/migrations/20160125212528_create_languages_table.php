@@ -1,31 +1,15 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
+use Utils\PhinxMigration;
 
-class CreateLanguagesTable extends AbstractMigration
+class CreateLanguagesTable extends PhinxMigration
 {
-    public function up()
+    public function change()
     {
-        $this->execute(
-            <<<'SQL'
-            CREATE TABLE `languages` (
-                id SERIAL PRIMARY KEY,
-                code VARCHAR(2)
-            );
-
-            INSERT INTO `languages` (code)
-            SELECT lang
-            FROM `_languages`
-SQL
-        );
-    }
-
-    public function down()
-    {
-        $this->execute(
-            <<<'SQL'
-            DROP TABLE languages;
-SQL
-        );
+        $this
+            ->table('languages')
+            ->addColumn('code', 'string', ['length' => 2])
+            ->addColumn('is_active', 'boolean')
+            ->create();
     }
 }

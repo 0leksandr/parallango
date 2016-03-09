@@ -1,30 +1,21 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
+use Utils\PhinxMigration;
 
-class CreateParagraphsTable extends AbstractMigration
+class CreateParagraphsTable extends PhinxMigration
 {
-    public function up()
+    public function change()
     {
-        $this->execute(
-            <<<'SQL'
-            CREATE TABLE paragraphs (
-                id SERIAL PRIMARY KEY,
-                parallango_id INTEGER NOT NULL REFERENCES parallangos(id),
-                `order` INTEGER NOT NULL,
-                position_begin INTEGER NOT NULL,
-                position_end INTEGER NOT NULL
-            );
-SQL
-        );
-    }
-
-    public function down()
-    {
-        $this->execute(
-            <<<'SQL'
-            DROP TABLE paragraphs;
-SQL
-        );
+        $this
+            ->table('paragraphs')
+            ->addColumn(
+                'parallango_id',
+                'integer',
+                ['references' => 'parallangos']
+            )
+            ->addColumn('order', 'integer')
+            ->addColumn('position_begin', 'integer')
+            ->addColumn('position_end', 'integer')
+            ->create();
     }
 }

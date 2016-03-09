@@ -54,6 +54,7 @@ class Result
      */
     public function getColumn($indexOrTitle = 0)
     {
+        // TODO: check for multi-columns result
         $indexOrTitle = $this->getColumnIndex($indexOrTitle);
         $column = [];
         while (true) {

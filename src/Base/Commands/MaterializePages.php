@@ -1,6 +1,6 @@
 <?php
 
-namespace Base;
+namespace Base\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -13,7 +13,7 @@ use Utils\DB\SQL;
 use Utils\DB\ValuesList;
 use Utils\ServiceContainer;
 
-require_once __DIR__ . '/../Utils/Utils.php';
+require_once __DIR__ . '/../../Utils/Utils.php';
 
 class MaterializePages extends Command
 {

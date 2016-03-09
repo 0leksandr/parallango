@@ -1,6 +1,6 @@
 <?php
 
-namespace integration\Utils\DB\Result\Batch;
+namespace Utils\DB\Result\Batch;
 
 use PHPUnit_Framework_TestCase;
 use Utils\DB\SQL;

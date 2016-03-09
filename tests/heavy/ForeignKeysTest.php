@@ -8,7 +8,7 @@ use Utils\ServiceContainer;
 class ForeignKeysTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * ~3.5min
+     * ~2min
      *
      * @test
      */
