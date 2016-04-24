@@ -31,22 +31,6 @@ class Parallango extends Identifiable
     }
 
     /**
-     * @return string
-     */
-    public function getLeftTitle()
-    {
-        return $this->left->getTitle();
-    }
-
-    /**
-     * @return string
-     */
-    public function getRightTitle()
-    {
-        return $this->right->getTitle();
-    }
-
-    /**
      * @return Language
      */
     public function getLeftLanguage()
@@ -79,6 +63,17 @@ class Parallango extends Identifiable
     }
 
     /**
+     * @param Language $language
+     * @return string
+     */
+    public function getTitle(Language $language)
+    {
+        return $this->isLeftSide($language)
+            ? $this->left->getTitle()
+            : $this->right->getTitle();
+    }
+
+    /**
      * @throws Exception
      */
     private function checkAuthor()
@@ -94,5 +89,24 @@ class Parallango extends Identifiable
                 $rightAuthorId
             ));
         }
+    }
+
+    /**
+     * @param Language $language
+     * @return bool
+     * @throws Exception
+     */
+    private function isLeftSide(Language $language)
+    {
+        if ($this->left->getLanguage()->equals($language)) {
+            return true;
+        } elseif ($this->right->getLanguage()->equals($language)) {
+            return false;
+        }
+        throw new Exception(sprintf(
+            'Can not match language %s to book#%d',
+            $language->getCode(),
+            $this->getId()
+        ));
     }
 }

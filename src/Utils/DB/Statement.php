@@ -4,6 +4,7 @@ namespace Utils\DB;
 
 use PDO;
 use PDOException;
+use PDOStatement;
 use Utils\DB\Exception\DBException;
 
 require_once __DIR__ . '/../Utils.php';
@@ -33,7 +34,6 @@ class Statement
     /**
      * @param array $params
      * @return Result
-     * @throws DBException
      */
     public function execute(array $params = [])
     {
@@ -48,10 +48,18 @@ class Statement
             count($this->paramsToBind) !==
             count(array_unique(ipull($this->paramsToBind, 'name')))
         ) {
-            throw new DBException('Inconsistency in params names');
+            SQL::reThrowEx(
+                new DBException('Inconsistency in params names'),
+                $this->query
+            );
         }
         $this->checkMaxNrParams(count($this->paramsToBind));
-        $statement = $this->pdo->prepare($this->query);
+        try {
+            $statement = $this->pdo->prepare($this->query);
+        } catch (PDOException $ex) {
+            SQL::reThrowEx($ex, $this->query);
+        }
+        /** @var PDOStatement $statement */
         foreach ($this->paramsToBind as $param) {
             $statement->bindValue(
                 $param['name'],
@@ -60,24 +68,17 @@ class Statement
             );
         }
 
+        $executed = false;
         try {
             $executed = $statement->execute();
         } catch (PDOException $ex) {
-            throw new DBException(sprintf(
-                <<<'TEXT'
-Query:
-%s
-
-Message:
-%s
-TEXT
-                ,
-                $this->query,
-                $ex->getMessage()
-            ));
+            SQL::reThrowEx($ex, $this->query, $params);
         }
         if ($executed === false) {
-            throw new DBException();
+            SQL::reThrowEx(
+                new DBException('Statement was not executed successfully'),
+                $this->query
+            );
         }
 
         $this->query = $originalQuery;

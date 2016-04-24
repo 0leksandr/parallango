@@ -5,6 +5,8 @@
 }) %}
 {# TODO: is locale needed here? #}
 
+{# TODO: anti-parsing #}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,7 +21,7 @@
         {% endif %}
 
         {% for available_language in available_languages %}
-            <link rel="alternate" hreflang='{{ language.code }}' href="{{ url(
+            <link rel="alternate" hreflang="{{ language.code }}" href="{{ url(
                 route,
                 {
                     _locale: available_language.code,
@@ -38,15 +40,15 @@
 
         {% block stylesheets %}
             {% for stylesheet in stylesheets %}
-                <link href="{{ stylesheet }}" rel="stylesheet" type="text/css">
+                <link href="{{ asset('css/' ~ stylesheet) }}" rel="stylesheet" type="text/css">
             {% endfor %}
         {% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body id="body">
-        <div id=main>
-            <div id=toppannel>
-                <table id=toppannel_center>
+        <div id="main">
+            <div id="toppannel">
+                <table id="toppannel_center">
                     <tr>
                         <td>
                             <a id="logo" href="{{ home }}"></a>
@@ -59,8 +61,7 @@
                                 {% for c in 0..4 %}
                                     <div>
                                         <span>
-                                            {#{%- trans %}infobox_ ~ {{ c }}{% endtrans -%}#}
-                                            {{ ('infobox_' ~ c)|trans }}
+                                            {{ ('infobox-' ~ c)|trans }}
                                         </span>
                                     </div>
                                 {% endfor %}
@@ -73,17 +74,17 @@
                             }) }}">full version</a>
                         </td>
                         <td>
-                            <div id=authorization>
-                                <div id=authImgTab>
-                                    {#<img id=loading_img src="{{ path_static }}/images/loading.gif" alt='loading..' width='32px' height='32px'/>#}
-                                    {% image '@AppBundle/Resources/images/loading.gif' %}
-                                        <img src="{{ asset_url }}" alt="loading.." />
-                                    {% endimage %}
+                            <div id="authorization">
+                                <div id="authImgTab">
+                                    {#{% image '@AppBundle/Resources/images/loading.gif' %}#}
+                                        {#<img src="{{ asset_url }}" alt="loading.." />#}
+                                    {#{% endimage %}#}
+                                    <img id="loading_img" src="{{ asset('images/loading.gif') }}" alt="loading.." width="32px" height="32px"/>
                                 </div>
-                                <div id=authorization_front_table>
-                                    <div id=authorization_front></div>
+                                <div id="authorization_front_table">
+                                    <div id="authorization_front"></div>
                                 </div>
-                                <div id=authorization_back>
+                                <div id="authorization_back">
                                     {# TODO: authorization #}
                                 </div>
                             </div>
@@ -92,19 +93,20 @@
                             <div id="langs">
                                 <div id="current_lang" class="lang {{ language.code }}">
                                     {#<img src="{{ path_static }}/images/{{ language.code }}.png" alt="{{ language.code }}">#}
-                                    {% image '@AppBundle/Resources/images/' ~ language.code ~ '.png' %}
-                                        <img src="{{ asset_url }}" alt="{{ language.code }}" />
-                                    {% endimage %}
+                                    {#{% image '@AppBundle/Resources/images/' ~ language.code ~ '.png' %}#}
+                                        {#<img src="{{ asset_url }}" alt="{{ language.code }}" />#}
+                                    {#{% endimage %}#}
+                                    <img src="{{ asset("images/" ~ language.code ~ ".png") }}" alt="{{ language.code }}"/>
                                 </div>
                                 {% for available_language in available_languages if available_language != language %}
                                     <a
-                                            class='lang {{ available_language.code }}'
-                                            href='{{ url(route, {
+                                            class="lang {{ available_language.code }}"
+                                            href="{{ url(route, {
                                                 _locale: available_language.code,
                                                 is_desktop_version: is_desktop_version
-                                            }) }}'
+                                            }) }}"
                                     >
-                                        <img src='$path_static/images/{{ available_language.code }}.png' alt='{{ available_language.code }}'>
+                                        <img src="{{ asset("images/" ~ available_language.code ~ ".png") }}" alt="{{ available_language.code }}">
                                     </a>
                                 {% endfor %}
                             </div>
@@ -115,11 +117,91 @@
                     </tr>
                 </table>
             </div>
-        </div>
 
-        {% block body %}
-            {% include view ~ '.html.twig' %}
-        {% endblock %}
+            <div id="page">
+                <!-- <div id="background" class="gradient"></div> -->
+                <div id="page_content"
+                    {% if page_class is not null %}
+                        class="{{ page_class }}"
+                    {% endif %}
+                >
+                    {% block body %}
+                        {% include 'AppBundle::' ~ view ~ '.html.twig' %}
+                    {% endblock %}
+                </div>
+                <form id="feedback_form" method="POST" action="{{ url('feedback') }}">
+                    <table>
+                        <tr class="input">
+                            <td>
+                                <input name="email" type="text" placeholder="{{ "feedback-email-placeholder"|trans }}">
+                            </td>
+                        </tr>
+                        <tr class="between"><td></td></tr>
+                        <tr class="text">
+                            <td>
+                                <textarea name="text" placeholder="{{ "feedback-message-placeholder"|trans }}"></textarea>
+                            </td>
+                        </tr>
+                        <tr class="between"><td></td></tr>
+                        <tr class="input">
+                            <td>
+                                <input type="submit" value="ok">
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="close"></div>
+                </form>
+                <form id="registration" action="{{ url('registration') }}" method=POST>
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="login">
+                                    {{ "registration-form-login"|trans }}
+                                </label>
+                            </td>
+                            <td>
+                                <input id="login" name="login">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="email">
+                                    {{ "registration-form-email"|trans }}
+                                </label>
+                            </td>
+                            <td>
+                                <input id="email" name="email">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password">
+                                    {{ "registration-form-password"|trans }}
+                                </label>
+                            </td>
+                            <td>
+                                <input type=password name="password" id="password">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password_confirmation">
+                                    {{ "registration-form-password-confirmation"|trans }}
+                                </label>
+                            </td>
+                            <td>
+                                <input id="password_confirmation" type=password name="password_confirmation">
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="close"></div>
+                    <input type=submit value="ok">
+                </form>
+                <div id="message"><table><tr><td></td></tr></table></div>
+                <div id="page_bottom"></div>
+            </div>
+        </div>
+        <div id="screen_bottom"></div>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

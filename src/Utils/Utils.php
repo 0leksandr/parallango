@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * mpull([$ferrary, $bmw], 'getColor') = ['red', 'black']
  *
@@ -130,4 +132,13 @@ function array_mergev(array $array)
         $res = array_merge($res, $item);
     }
     return $res;
+}
+
+/**
+ * @param Request $request
+ * @return string
+ */
+function getUseragent(Request $request)
+{
+    return $request->headers->get('User-Agent');
 }

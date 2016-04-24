@@ -1,32 +1,33 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
+use Utils\PhinxMigration;
 
-class AddMaterializedNrBooks extends AbstractMigration
+class AddMaterializedNrBooks extends PhinxMigration
 {
-    /**
-     * Change Method.
-     *
-     * Write your reversible migrations using this method.
-     *
-     * More information on writing migrations is available here:
-     * http://docs.phinx.org/en/latest/migrations.html#the-abstractmigration-class
-     *
-     * The following commands can be used in this method and Phinx will
-     * automatically reverse them when rolling back:
-     *
-     *    createTable
-     *    renameTable
-     *    addColumn
-     *    renameColumn
-     *    addIndex
-     *    addForeignKey
-     *
-     * Remember to call "create()" or "update()" and NOT "save()" when working
-     * with the Table class.
-     */
     public function change()
     {
+        $this
+            ->table('mat_nr_books_authors')
+            ->addColumn('author_id', 'integer', ['references' => 'authors'])
+            ->addColumn('language1_id', 'integer', [
+                'references' => 'languages',
+            ])
+            ->addColumn('language2_id', 'integer', [
+                'references' => 'languages',
+            ])
+            ->addColumn('nr_books', 'integer')
+            ->create();
 
+        $this
+            ->table('mat_nr_books_sections')
+            ->addColumn('section_id', 'integer', ['references' => 'sections'])
+            ->addColumn('language1_id', 'integer', [
+                'references' => 'languages',
+            ])
+            ->addColumn('language2_id', 'integer', [
+                'references' => 'languages',
+            ])
+            ->addColumn('nr_books', 'integer')
+            ->create();
     }
 }

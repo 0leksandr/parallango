@@ -75,11 +75,12 @@ abstract class AbstractSqlRepository extends AbstractRepository
 
     /**
      * @param $query
+     * @param array $params
      * @return Identifiable
      */
-    protected function getSingleBySelectIdQuery($query)
+    protected function getSingleBySelectIdQuery($query, array $params = [])
     {
-        $entities = $this->getBySelectIdsQuery($query);
+        $entities = $this->getBySelectIdsQuery($query, $params);
         if (count($entities) !== 1) {
             $this->throwEx(sprintf(
                 'Expected 1 entity, got %d',

@@ -59,19 +59,29 @@ abstract class AbstractRepository
 
     /**
      * @param array $rows
-     * @return int|string
+     * @param string $key
+     * @return mixed
      * @throws Exception
      */
-    protected function getIdFromMultipleRows(array $rows)
+    protected function getValueFromMultipleRows(array $rows, $key)
     {
-        $ids = array_unique(ipull($rows, 'id'));
-        if (count($ids) !== 1) {
+        $values = array_unique(ipull($rows, $key));
+        if (count($values) !== 1) {
             throw new Exception(sprintf(
                 'Incorrect data provided for %s',
                 get_class($this)
             ));
         }
-        return head($ids);
+        return head($values);
+    }
+
+    /**
+     * @param array $rows
+     * @return int|string
+     */
+    protected function getIdFromMultipleRows(array $rows)
+    {
+        return $this->getValueFromMultipleRows($rows, 'id');
     }
 
     /**

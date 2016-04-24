@@ -6,6 +6,7 @@ use AppBundle\Entity\AbstractSqlRepository;
 
 /**
  * @method Language getById($id)
+ * @method Language[] getByIds(array $ids)
  */
 class LanguageRepository extends AbstractSqlRepository
 {

@@ -1,5 +1,3 @@
-parameters:
-
 services:
     sql:
         class: Utils\DB\SQL
@@ -36,3 +34,8 @@ services:
     page:
         class: AppBundle\Entity\Page\PageRepository
         arguments: [@sql, %books_root%]
+
+    twig.random_color:
+        class: AppBundle\Resources\Twig\RandomColorExtension
+        tags:
+            - { name: twig.extension }

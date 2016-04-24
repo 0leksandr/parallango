@@ -1,1 +1,33 @@
-test {{ language.code }}
+<div id="preview">
+    {{ random_page }}
+    <div id="preview_background">
+		<span>{{ random_book_preview|trans }}</span>
+		<span class="italic">
+			({{ book.author.name(language) }}, "{{ book.title(language) }}")
+		</span>
+    </div>
+</div>
+
+<div id=preview_mobile>
+	<table class=book_read>
+		{% for mobile_preview_row in mobile_preview_rows %}
+			<tr>
+				<td>
+					{{ mobile_preview_row[0] }}
+				</td>
+				<td>
+					{{ mobile_preview_row[1] }}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>
+
+{% include '@App/list/list.html.twig' with {
+	header: 'items-header-authors'|trans,
+	items: authors,
+	type: 'author',
+	active: false,
+	id: 'authors',
+	nofollow: false
+} %}

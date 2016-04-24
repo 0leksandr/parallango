@@ -119,7 +119,7 @@ SQL
         return $this->sql->getColumn(
             <<<'SQL'
             SELECT DISTINCT parallango_id
-            FROM paragraphs;
+            FROM paragraphs
 SQL
         );
     }

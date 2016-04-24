@@ -26,6 +26,7 @@ class DBTest extends PHPUnit_Framework_TestCase
                 'author_id' => ['authors', 'id', true, true],
                 'language_id' => ['languages', 'id', true, false],
                 'section_id' => ['sections', 'id', false, true],
+                'group_id' => ['groups', 'id', false, true],
             ],
             'parallangos' => [
                 'left_book_id' => ['books', 'id', true, false],
@@ -37,6 +38,16 @@ class DBTest extends PHPUnit_Framework_TestCase
             'materialized_pages' => [
                 'parallango_id' => ['parallangos', 'id', true, true],
                 'page_size_id' => ['page_sizes', 'id', true, null, true],
+            ],
+            'mat_nr_books_authors' => [
+                'author_id' => ['authors' ,'id', true, true],
+                'language1_id' => ['languages', 'id', true, false],
+                'language2_id' => ['languages', 'id', true, false],
+            ],
+            'mat_nr_books_sections' => [
+                'section_id' => ['sections' ,'id', true, true],
+                'language1_id' => ['languages', 'id', true, false],
+                'language2_id' => ['languages', 'id', true, false],
             ],
         ] as $table => $columns) {
             foreach ($columns as $column => $foreign) {

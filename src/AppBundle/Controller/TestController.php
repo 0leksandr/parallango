@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Utils\ServiceContainer;
 
 class TestController extends Controller
 {
@@ -18,5 +19,6 @@ class TestController extends Controller
 
     private function test()
     {
+        echo count(ServiceContainer::get('test')->get('parallango')->getAll());
     }
 }

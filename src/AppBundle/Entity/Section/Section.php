@@ -10,6 +10,8 @@ class Section extends Identifiable
 {
     /** @var MultiTranslation */
     private $title;
+    /** @var int */
+    private $nrBooks;
 
     /**
      * @param int $id
@@ -37,6 +39,24 @@ class Section extends Identifiable
     public function addTitle(Language $language, $title)
     {
         $this->title->addValue($language, $title);
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNrBooks()
+    {
+        return $this->nrBooks;
+    }
+
+    /**
+     * @param int $nrBooks
+     * @return $this
+     */
+    public function setNrBooks($nrBooks)
+    {
+        $this->nrBooks = $nrBooks;
         return $this;
     }
 }

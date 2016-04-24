@@ -1,0 +1,6 @@
+{% include 'item.html.twig' with {
+    href: '/section/' ~ section.id,
+    text: section.title(language),
+    additional: section.nrBooks,
+    nofollow: nofollow
+} %}

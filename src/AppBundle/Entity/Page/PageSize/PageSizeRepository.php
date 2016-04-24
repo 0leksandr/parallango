@@ -23,6 +23,23 @@ SQL
     }
 
     /**
+     * @param int $pageSizeSymbols
+     * @return PageSize
+     */
+    public function get($pageSizeSymbols)
+    {
+        return $this->getSingleBySelectIdQuery(
+            <<<'SQL'
+            SELECT id
+            FROM page_sizes
+            WHERE page_size_symbols = :page_size_symbols
+SQL
+            ,
+            ['page_size_symbols' => $pageSizeSymbols]
+        );
+    }
+
+    /**
      * @param array $data
      * @return PageSize
      */

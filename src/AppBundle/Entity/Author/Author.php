@@ -8,7 +8,7 @@ use AppBundle\Entity\Language\Language;
 class Author extends Identifiable
 {
     const NAME = 'name';
-    // TODO: do something with it
+    // TODO: something with it
 //    const PSEUDONYM = 'pseudonym';
 //    const FIRST_NAME = 'first_name';
 //    const LAST_NAME = 'last_name';
@@ -16,6 +16,8 @@ class Author extends Identifiable
 
     /** @var array[] */
     private $translatedProperties = [];
+    /** @var int */
+    private $nrBooks;
 
 //    /** @var MultiTranslation */
 //    private $name;
@@ -165,6 +167,24 @@ class Author extends Identifiable
     }
 
     /**
+     * @return int
+     */
+    public function getNrBooks()
+    {
+        return $this->nrBooks;
+    }
+
+    /**
+     * @param int $nrBooks
+     * @return $this
+     */
+    public function setNrBooks($nrBooks)
+    {
+        $this->nrBooks = $nrBooks;
+        return $this;
+    }
+
+    /**
      * @return string[]
      */
     public static function getPropertyNames()
@@ -191,5 +211,14 @@ class Author extends Identifiable
                 $propertyName
             ));
         }
+    }
+
+    /**
+     * @param Language $language
+     * @return string
+     */
+    public function getName(Language $language)
+    {
+        return $this->get(self::NAME, $language);
     }
 }

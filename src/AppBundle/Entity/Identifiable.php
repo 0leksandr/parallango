@@ -24,6 +24,17 @@ abstract class Identifiable
     }
 
     /**
+     * @param Identifiable $other
+     * @return bool
+     */
+    public function equals(Identifiable $other)
+    {
+        return
+            get_class($this) === get_class($other)
+            && $this->getId() === $other->getId();
+    }
+
+    /**
      * @param Identifiable[] $entities
      * @return Identifiable[]
      */

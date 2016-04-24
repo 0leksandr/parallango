@@ -98,7 +98,7 @@ class Result
                 return $this->rowToArray($row);
             }
         } catch (PDOException $ex) {
-            $this->reThrowEx($ex);
+            SQL::reThrowEx($ex, $this->statement->queryString);
         }
 
         return null;
@@ -119,22 +119,6 @@ class Result
     public function getResultBatchSized()
     {
         return new ResultBatchSized($this);
-    }
-
-    /**
-     * @param PDOException $ex
-     * @throws DBException
-     */
-    private function reThrowEx(PDOException $ex)
-    {
-        throw new DBException(sprintf(
-            <<<'TEXT'
-Message:
-%s
-TEXT
-            ,
-            $ex->getMessage()
-        ));
     }
 
     /**

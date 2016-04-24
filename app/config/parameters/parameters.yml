@@ -1,0 +1,3 @@
+parameters:
+#    books_root: "/mnt/Data/localhost/parallango/base/[hdd]/merged books"
+    books_root: "/media/oleksandr/Hard Disk Drive/parallango/merged/books"

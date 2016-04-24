@@ -1,0 +1,8 @@
+{#{% extends "item.html.twig" %}#}
+
+{% include "item.html.twig" with {
+    href: "/author/" ~ author.id,
+    text: author.name(language),
+    additional: author.nr_books,
+    nofollow: nofollow
+} %}

@@ -51,6 +51,11 @@ class UpdateDB extends Command
                     MaterializePages::ARGUMENT_PAGE_SIZE => $pageSize,
                 ],
             ],
+            [
+                'message' => 'Materializing nr books',
+                'command' => new MaterializeNrBooks(),
+                'input' => [],
+            ],
         ] as $step) {
             $output->writeln($step['message'] . '...');
             /** @var Command $command */

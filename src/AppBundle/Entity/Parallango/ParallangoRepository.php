@@ -38,6 +38,37 @@ SQL
     }
 
     /**
+     * @return Parallango
+     */
+    public function getRandom()
+    {
+        // TODO: SQL, that supports LIMIT in sub-queries!
+        $id = $this->sql->getSingle(
+            <<<'SQL'
+            SELECT id
+            FROM parallangos
+            LIMIT 1 OFFSET :random
+SQL
+            ,
+            ['random' => rand(1, $this->sql->getSingle(
+                <<<'SQL'
+                SELECT COUNT(*)
+                FROM parallangos
+SQL
+            ) - 1)]
+        );
+
+        $res= $this->getSingleBySelectIdQuery(
+            <<<'SQL'
+            SELECT :id
+SQL
+            ,
+            ['id' => $id]
+        );
+        return $res;
+    }
+
+    /**
      * @param array $data
      * @return Parallango
      */

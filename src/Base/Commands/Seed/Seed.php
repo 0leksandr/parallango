@@ -4,6 +4,7 @@ namespace Base\Commands\Seed;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -29,12 +30,13 @@ class Seed extends Command
             new Sections(),
             new Books(),
             new Parallangos(),
+            new Groups(),
         ];
         $progress = new ProgressBar($output);
         $progress->start(count($commands));
         foreach ($commands as $command) {
             /** @var Command $command */
-            $command->run($input, $output);
+            $command->run(new ArrayInput([]), $output);
             $progress->advance();
         }
         $progress->finish();

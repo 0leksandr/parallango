@@ -1,2 +1,17 @@
-feedback_email_placeholder: your email (optional)
-'feedback_email_placeholder': 'your email (optional)'
+infobox-0: parallel languages reading service
+infobox-1: available in mobile
+infobox-2: learn English, while reading favorite books
+infobox-3: 1500 books in our base at the moment
+infobox-4: all texts are presented for educational purposes (learning foreign languages)
+feedback_button: give us a feedback!
+feedback-email-placeholder: your email (optional)
+feedback-message-placeholder: You can write any your wish or proposal to Parallango here. As far as project is young, we read all your messages:)
+registration-form-login: Login:
+registration-form-email: Email:
+registration-form-password: Password:
+registration-form-password-confirmation: Confirm password:
+
+default-page-title: Learn English by reading books.
+default-page-description: Read interesting books in original, with parallel translation. Learn english easy, anywhere, on Your mobile device, on the road
+default-page-keywords:  Learn English, read books in original, parallel translation, read books in English
+mobile-preview: Read|books|in English|with|paraller|translation
