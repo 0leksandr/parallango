@@ -1,0 +1,125 @@
+{% set route = app.request.get('_route') %}
+{% set home = url('home', {
+    _locale: language.code,
+    is_desktop_version: is_desktop_version
+}) %}
+{# TODO: is locale needed here? #}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8" /> {# TODO: quotes? #}
+        <base href="{{ home }}" />
+
+        {% if not is_desktop_version %}
+            <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+            <meta name="HandheldFriendly" content="true" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        {% endif %}
+
+        {% for available_language in available_languages %}
+            <link rel="alternate" hreflang='{{ language.code }}' href="{{ url(
+                route,
+                {
+                    _locale: available_language.code,
+                    is_desktop_version: is_desktop_version
+                }
+            ) }}">
+        {% endfor %}
+
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        <meta name="keywords" content="{{ keywords }}">
+        <meta name="description" content="{{ description }}">
+        {% if robots %}
+            <meta name="robots" content="{{ robots }}">
+        {% endif %}
+        <meta name="author" content="Oleksandr Boiko">
+
+        {% block stylesheets %}
+            {% for stylesheet in stylesheets %}
+                <link href="{{ stylesheet }}" rel="stylesheet" type="text/css">
+            {% endfor %}
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body id="body">
+        <div id=main>
+            <div id=toppannel>
+                <table id=toppannel_center>
+                    <tr>
+                        <td>
+                            <a id="logo" href="{{ home }}"></a>
+                        </td>
+                        <td>
+                            <div id="alpha">[Alpha]</div>
+                        </td>
+                        <td>
+                            <div id="infobox">
+                                {% for c in 0..4 %}
+                                    <div>
+                                        <span>
+                                            {#{%- trans %}infobox_ ~ {{ c }}{% endtrans -%}#}
+                                            {{ ('infobox_' ~ c)|trans }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td>
+                            <a id="full_version" href="{{ url(route, {
+                                _locale: language.code,
+                                is_desktop_version: true
+                            }) }}">full version</a>
+                        </td>
+                        <td>
+                            <div id=authorization>
+                                <div id=authImgTab>
+                                    {#<img id=loading_img src="{{ path_static }}/images/loading.gif" alt='loading..' width='32px' height='32px'/>#}
+                                    {% image '@AppBundle/Resources/images/loading.gif' %}
+                                        <img src="{{ asset_url }}" alt="loading.." />
+                                    {% endimage %}
+                                </div>
+                                <div id=authorization_front_table>
+                                    <div id=authorization_front></div>
+                                </div>
+                                <div id=authorization_back>
+                                    {# TODO: authorization #}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="langs">
+                                <div id="current_lang" class="lang {{ language.code }}">
+                                    {#<img src="{{ path_static }}/images/{{ language.code }}.png" alt="{{ language.code }}">#}
+                                    {% image '@AppBundle/Resources/images/' ~ language.code ~ '.png' %}
+                                        <img src="{{ asset_url }}" alt="{{ language.code }}" />
+                                    {% endimage %}
+                                </div>
+                                {% for available_language in available_languages if available_language != language %}
+                                    <a
+                                            class='lang {{ available_language.code }}'
+                                            href='{{ url(route, {
+                                                _locale: available_language.code,
+                                                is_desktop_version: is_desktop_version
+                                            }) }}'
+                                    >
+                                        <img src='$path_static/images/{{ available_language.code }}.png' alt='{{ available_language.code }}'>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div id="feedback">
+                                {%- trans %}feedback_button{% endtrans -%}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {% block body %}
+            {% include view ~ '.html.twig' %}
+        {% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

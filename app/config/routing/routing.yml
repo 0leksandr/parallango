@@ -1,0 +1,5 @@
+specified_language:
+    prefix: /{_locale}
+    resource: routing/routes.yml
+    requirements:
+        _locale: "|en|ru" #http://stackoverflow.com/questions/7903477/symfony2-default-locale-in-routing

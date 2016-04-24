@@ -1,0 +1,20 @@
+<div class="item">
+    <a href="{{ href }}" onclick="goto_item($(this).parent())"
+        {% if nofollow %}
+            rel="nofollow"
+        {% endif %}
+    >
+        <div class=item_content>
+            <table>
+                <tr>
+                    <td>
+                        {{ text }}
+                        {% if additional is not empty %}
+                            <span class="additional">({{ additional }})</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </a>
+</div>
