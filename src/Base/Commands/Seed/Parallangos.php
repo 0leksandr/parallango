@@ -21,7 +21,8 @@ class Parallangos extends AbstractSeedCommand
                 id,
                 original_id_0,
                 original_id_1
-            FROM `_books`;
+            FROM `_books`
+            ORDER BY id
 SQL
         );
     }

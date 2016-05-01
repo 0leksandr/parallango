@@ -142,3 +142,13 @@ function getUseragent(Request $request)
 {
     return $request->headers->get('User-Agent');
 }
+
+/**
+ * @param array[] $array
+ * @return array[]
+ */
+function transpose(array $array) // TODO: update with php7
+{
+    array_unshift($array, null);
+    return call_user_func_array('array_map', $array);
+}

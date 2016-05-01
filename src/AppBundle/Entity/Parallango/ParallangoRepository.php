@@ -55,7 +55,7 @@ SQL
                 SELECT COUNT(*)
                 FROM parallangos
 SQL
-            ) - 1)]
+            )) - 1]
         );
 
         $res= $this->getSingleBySelectIdQuery(

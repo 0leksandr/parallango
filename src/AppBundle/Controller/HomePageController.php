@@ -95,7 +95,6 @@ class HomePageController extends PageController
     {
         do {
             $randomBook = $this->get('parallango')->getRandom();
-exit(__FILE__.":".__LINE__.PHP_EOL);
             $pageSize = $this->get('page_size')->get(5000);
             $pages = $this->get('page')->getByParallangoAndPageSize(
                 $randomBook,
@@ -103,7 +102,7 @@ exit(__FILE__.":".__LINE__.PHP_EOL);
             );
             $randomPage = $pages[rand(2, count($pages) - 2)];
         } while (
-(
+(//TODO:fix
             strlen($randomPage->getText()) !== $pageSize->getPageSizeSymbols()
 )&&false
         );
@@ -119,27 +118,26 @@ exit(__FILE__.":".__LINE__.PHP_EOL);
      */
     private function getMobilePreview()
     {
-//exit(__FILE__.":".__LINE__.PHP_EOL);
         // TODO: make it normal
         /**
          * @var TranslatorInterface $translator1
          * @var TranslatorInterface $translator2
          */
         list($translator1, $translator2) = $this->getTranslators();
-exit(__FILE__.":".__LINE__.PHP_EOL);
         $left = explode('|', $translator1->trans('mobile-preview'));
         $right = explode('|', $translator2->trans('mobile-preview'));
         $nrRows = max([count($left), count($right)]);
-exit(__FILE__.":".__LINE__." ".count($left)." ".count($right)." ".$nrRows.PHP_EOL);
-        $left += array_fill(count($left), $nrRows - count($left), '');
-        $right += array_fill(count($right), $nrRows - count($right), '');
-exit(__FILE__.":".__LINE__.PHP_EOL);
+        if ($nrRows > count($left)) {
+            $left += array_fill(count($left), $nrRows - count($left), '');
+        }
+        if ($nrRows > count($right)) {
+            $right += array_fill(count($right), $nrRows - count($right), '');
+        }
 
         $res = [];
         foreach ($left as $key => $value) {
             $res[] = [$value, $right[$key]];
         }
-exit(__FILE__.":".__LINE__.PHP_EOL);
 
         return ['mobile_preview_rows' => $res];
     }

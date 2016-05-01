@@ -20,18 +20,18 @@
         </a>
     </h1>
     {% for item in items %}
-        {% if type == 'author' %}
-            {% include 'author.html.twig' with {
+        {% if type == "author" %}
+            {% include "@App/list/author.html.twig" with {
                 author: item,
                 nofollow: nofollow
             } %}
-        {% elseif type == 'parallango' %}
-            {% include 'parallango.html.twig' with {
+        {% elseif type == "parallango" %}
+            {% include "@App/list/parallango.html.twig" with {
                 parallango: item,
                 nofollow: nofollow
             } %}
-        {% elseif type == 'section' %}
-            {% include 'section.html.twig' with {
+        {% elseif type == "section" %}
+            {% include "@App/list/section.html.twig" with {
                 section: item,
                 nofollow: nofollow
             } %}

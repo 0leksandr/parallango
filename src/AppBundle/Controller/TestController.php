@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Utils\ServiceContainer;
 
+require_once __DIR__ . '/../../Utils/Utils.php';
+
 class TestController extends Controller
 {
     public function indexAction(Request $request)
@@ -19,6 +21,5 @@ class TestController extends Controller
 
     private function test()
     {
-        echo count(ServiceContainer::get('test')->get('parallango')->getAll());
     }
 }

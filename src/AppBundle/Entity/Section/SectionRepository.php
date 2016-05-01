@@ -68,22 +68,16 @@ SQL
                 s.id,
                 st.language_id,
                 st.title,
-                COUNT(DISTINCT p.id) + COUNT(DISTINCT g.id) AS nr_books
+                mnbs.nr_books
             FROM
                 sections s
                 JOIN section_titles st
                     ON s.id = st.section_id
-                LEFT JOIN books b1
-                    ON b1.section_id = s.id
-                    AND b1.group_id IS NULL
-                LEFT JOIN books b2
-                    ON b2.section_id = s.id
-                    AND b2.group_id IS NOT NULL
-                LEFT JOIN parallangos p
-                    ON p.left_book_id = b1.id
-                    OR p.right_book_id = b1.id
-                LEFT JOIN groups g
-                    ON g.id = b2.group_id
+                JOIN mat_nr_books_sections mnbs
+                    ON s.id = mnbs.section_id
+                    # TODO: same as authors
+                    AND mnbs.language1_id = 1
+                    AND mnbs.language2_id = 3
             WHERE
                 s.id IN :ids
 SQL;

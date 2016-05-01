@@ -91,7 +91,6 @@ abstract class PageController extends SymfonyController
             'AppBundle::page.html.twig',
             $this->getAllParameters($request)
         );
-exit(__FILE__.":".__LINE__.PHP_EOL);
         $response->headers->add([
             'Content-Type' => 'text/html',
             'charset' => 'utf-8',

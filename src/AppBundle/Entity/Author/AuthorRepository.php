@@ -40,26 +40,16 @@ class AuthorRepository extends AbstractSqlRepository
             SELECT DISTINCT a.id
             FROM
                 authors a
-                JOIN books b1
-                    ON b1.author_id = a.id
-                JOIN books b2
-                    ON b2.author_id = a.id
-                JOIN parallangos p
-                    ON b2.id = p.left_book_id
-                    AND b2.id = p.right_book_id
+                JOIN mat_nr_books_authors mnba
+                    ON a.id = mnba.author_id
             WHERE
-                (
-                    b1.language_id = :language_id_1
-                    AND b2.language_id = :language_id_2
-                ) OR (
-                    b2.language_id = :language_id_1
-                    AND b1.language_id = :language_id_2
-                )
+                mnba.language1_id = :language1_id
+                AND mnba.language2_id = :language2_id
 SQL
             ,
             [
-                'language_id_1' => $language1->getId(),
-                'language_id_2' => $language2->getId(),
+                'language1_id' => $language1->getId(),
+                'language2_id' => $language2->getId(),
             ]
         );
     }
@@ -98,7 +88,7 @@ SQL
                 alp.property_name,
                 alps.language_id,
                 alps.property_value,
-                COUNT(DISTINCT p.id) + COUNT(DISTINCT g.id) AS nr_books
+                mnba.nr_books
             FROM
                 authors a
                 JOIN author_language_property alp
@@ -107,17 +97,11 @@ SQL
                     ON a.id = alps.author_id
                     AND alp.id = alps.property_id
                     AND l.id = alps.language_id
-                LEFT JOIN books b1
-                    ON b1.author_id = a.id
-                    AND b1.group_id IS NULL
-                LEFT JOIN books b2
-                    ON b2.author_id = a.id
-                    AND b2.group_id IS NOT NULL
-                LEFT JOIN parallangos p
-                    ON p.left_book_id = b1.id
-                    OR p.right_book_id = b1.id
-                LEFT JOIN groups g
-                    ON g.id = b2.group_id
+                LEFT JOIN mat_nr_books_authors mnba
+                    ON mnba.author_id = a.id
+                    #TODO: make it work with all language pairs
+                    AND mnba.language1_id = 1
+                    AND mnba.language2_id = 3
             WHERE
                 a.id IN :ids
 SQL;
