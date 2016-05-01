@@ -51,6 +51,21 @@ SQL
     }
 
     /**
+     * @return Language[][]
+     */
+    public function getPairs()
+    {
+        $languagePairs = [];
+        $activeLanguages = $this->getActive();
+        foreach ($activeLanguages as $index => $language1) {
+            foreach (array_slice($activeLanguages, $index + 1) as $language2) {
+                $languagePairs[] = [$language1, $language2];
+            }
+        }
+        return $languagePairs;
+    }
+
+    /**
      * @param array $data
      * @return Language
      */

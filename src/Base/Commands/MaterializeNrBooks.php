@@ -39,7 +39,7 @@ class MaterializeNrBooks extends Command
         $this->sql = $this->serviceContainer->get('sql');
         $this->clearTables();
 
-        $languagePairs = $this->getLanguagePairs();
+        $languagePairs = $this->serviceContainer->get('language')->getPairs();
         // TODO: languages in different order (1, 3) vs (3, 1) ?
         foreach ($languagePairs as $languagePair) {
             list($language1, $language2) = $languagePair;
@@ -61,24 +61,6 @@ SQL
             TRUNCATE TABLE mat_nr_books_sections
 SQL
         );
-    }
-
-    /**
-     * @return Language[][]
-     */
-    private function getLanguagePairs()
-    {
-        $languagePairs = [];
-        $activeLanguages = $this
-            ->serviceContainer
-            ->get('language')
-            ->getActive();
-        foreach ($activeLanguages as $index => $language1) {
-            foreach (array_slice($activeLanguages, $index + 1) as $language2) {
-                $languagePairs[] = [$language1, $language2];
-            }
-        }
-        return $languagePairs;
     }
 
     /**
@@ -138,6 +120,8 @@ SQL
                 $booksInUberGroups,
                 $booksSections
             );
+            // remove books without sections
+            unset($sectionsNrBooks[$langIndex]['']);
             ksort($authorsNrBooks[$langIndex]);
             ksort($sectionsNrBooks[$langIndex]);
         }
