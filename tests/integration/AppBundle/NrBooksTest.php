@@ -12,6 +12,7 @@ class NrBooksTest extends PHPUnit_Framework_TestCase
      */
     public function allActiveAuthorsShouldHaveNrBooks()
     {
+        // TODO: use repositories
         $sql = ServiceContainer::get('test')->get('sql');
         $this->assertTrue(false);
     }

@@ -3,7 +3,6 @@
 namespace AppBundle\Entity\Author;
 
 use AppBundle\Entity\AbstractSqlRepository;
-use AppBundle\Entity\Language\Language;
 use AppBundle\Entity\Language\LanguageRepository;
 use Utils\DB\SQL;
 
@@ -28,29 +27,15 @@ class AuthorRepository extends AbstractSqlRepository
     }
 
     /**
-     * @param Language $language1
-     * @param Language $language2
      * @return Author[]
      */
-    public function getByLanguages(Language $language1, Language $language2)
+    public function getAll()
     {
-        // TODO: check
         return $this->getBySelectIdsQuery(
             <<<'SQL'
-            SELECT DISTINCT a.id
-            FROM
-                authors a
-                JOIN mat_nr_books_authors mnba
-                    ON a.id = mnba.author_id
-            WHERE
-                mnba.language1_id = :language1_id
-                AND mnba.language2_id = :language2_id
+            SELECT id
+            FROM authors
 SQL
-            ,
-            [
-                'language1_id' => $language1->getId(),
-                'language2_id' => $language2->getId(),
-            ]
         );
     }
 
@@ -102,8 +87,8 @@ SQL
                     #TODO: make it work with all language pairs
                     AND mnba.language1_id = 1
                     AND mnba.language2_id = 3
-            WHERE
-                a.id IN :ids
+            WHERE a.id IN :ids
+            ORDER BY mnba.nr_books
 SQL;
     }
 }

@@ -25,15 +25,13 @@ class HomePageController extends PageController
      */
     public function getParameters(Request $request)
     {
-        list($language1, $language2) = $this->getLanguages();
-
         return
             $this->getPreview()
             + $this->getMobilePreview()
             + [
                 'authors' => $this
                     ->get('author')
-                    ->getByLanguages($language1, $language2),
+                    ->getAll(),
             ];
     }
 
