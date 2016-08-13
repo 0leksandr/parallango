@@ -27,15 +27,22 @@ class AuthorRepository extends AbstractSqlRepository
     }
 
     /**
+     * @param int|null $limit
+     * @param int $offset
      * @return Author[]
      */
-    public function getAll()
+    public function getAll($limit = null, $offset = 0)
     {
         return $this->getBySelectIdsQuery(
             <<<'SQL'
             SELECT id
             FROM authors
 SQL
+            ,
+            [
+                'LIMIT' => $limit,
+                'offset' => $offset,
+            ]
         );
     }
 
@@ -49,15 +56,29 @@ SQL
             $data,
             ['id', 'property_name', 'language_id', 'property_value', 'nr_books']
         );
-        $author = new Author($this->getIdFromMultipleRows($data));
-        foreach ($data as $row) {
+
+//        $author = new Author($this->getIdFromMultipleRows($data));
+//        foreach ($data as $row) {
+//            $author->set(
+//                $row['property_name'],
+//                $this->languageRepository->getById($row['language_id']),
+//                $row['property_value']
+//            );
+//        }
+//        $author->setNrBooks($this->getValueFromMultipleRows($data, 'nr_books'));
+        $data = $this->getRowFromArray($data);
+        $author = new Author($data['id']);
+        foreach (array_keys($data['property_name']) as $key) {
+            $language = $this
+                ->languageRepository
+                ->getById($data['language_id'][$key]);
             $author->set(
-                $row['property_name'],
-                $this->languageRepository->getById($row['language_id']),
-                $row['property_value']
+                $data['property_name'][$key],
+                $language,
+                $data['property_value'][$key]
             );
         }
-        $author->setNrBooks($this->getValueFromMultipleRows($data, 'nr_books'));
+        $author->setNrBooks($data['nr_books']);
 
         return $author;
     }
@@ -70,9 +91,12 @@ SQL
         return <<<'SQL'
             SELECT
                 a.id,
-                alp.property_name,
-                alps.language_id,
-                alps.property_value,
+                GROUP_CONCAT(alp.property_name SEPARATOR '::')
+                    AS property_name__TEXT,
+                GROUP_CONCAT(alps.language_id SEPARATOR '::')
+                    AS language_id__INT,
+                GROUP_CONCAT(alps.property_value SEPARATOR '::')
+                    AS property_value__TEXT,
                 mnba.nr_books
             FROM
                 authors a
@@ -88,7 +112,9 @@ SQL
                     AND mnba.language1_id = 1
                     AND mnba.language2_id = 3
             WHERE a.id IN :ids
-            ORDER BY mnba.nr_books
+            GROUP BY a.id
+            ORDER BY mnba.nr_books DESC
+            LIMIT :LIMIT OFFSET :offset
 SQL;
     }
 }

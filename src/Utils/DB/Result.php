@@ -13,6 +13,7 @@ require_once __DIR__ . '/../Utils.php';
 
 class Result
 {
+    // TODO: replace with exception
     const NO_SINGLE_VALUE = 'NO_SINGLE_VALUE';
 
     /** @var PDOStatement */
@@ -55,10 +56,10 @@ class Result
     public function getColumn($indexOrTitle = 0)
     {
         // TODO: check for multi-columns result
-        $indexOrTitle = $this->getColumnIndex($indexOrTitle);
+        $index = $this->getColumnIndex($indexOrTitle);
         $column = [];
         while (true) {
-            $single = $this->getSingle($indexOrTitle);
+            $single = $this->getSingle($index);
             if ($single === self::NO_SINGLE_VALUE) {
                 break;
             }
@@ -71,21 +72,19 @@ class Result
     /**
      * @param int|string $indexOrTitle
      * @return mixed
-     * @throws DBException
      */
     public function getSingle($indexOrTitle = 0)
     {
-        $indexOrTitle = $this->getColumnIndex($indexOrTitle);
-        if ($indexOrTitle >= count($this->getColumnMetas())) {
-            throw new DBException('Incorrect column index');
-        }
-        $cell = $this->statement->fetchColumn($indexOrTitle);
-        if ($cell === false) {
+        $index = $this->getColumnIndex($indexOrTitle);
+        $value = $this->statement->fetchColumn($index);
+        if ($value === false) {
             return self::NO_SINGLE_VALUE;
         }
-        $type = $this->getColumnTypes()[$indexOrTitle];
+        $type = $this->getColumnTypes()[$index];
+        $name = $this->getColumnNames()[$index];
+        $cell = new Cell($value, $type, $name);
 
-        return self::convertCell($cell, $type);
+        return $cell->getValue();
     }
 
     /**
@@ -130,11 +129,9 @@ class Result
         $newRow = [];
         $index = 0;
         $types = $this->getColumnTypes();
-        foreach ($row as $column => $cell) {
-            $newRow[$column] = self::convertCell(
-                $cell,
-                $types[$index++]
-            );
+        foreach ($row as $columnName => $value) {
+            $cell = new Cell($value, $types[$index++], $columnName);
+            $newRow[$cell->getName()] = $cell->getValue();
         }
         return $newRow;
     }
@@ -156,8 +153,12 @@ class Result
                 ));
             }
             $indexOrTitle = $keys[0];
-            return $indexOrTitle;
         }
+
+        if ($indexOrTitle >= count($this->getColumnMetas())) {
+            throw new DBException('Incorrect column index');
+        }
+
         return $indexOrTitle;
     }
 
@@ -192,35 +193,5 @@ class Result
             }
         }
         return $this->columnMetas;
-    }
-
-    /**
-     * @param string $oldValue
-     * @param string $newType
-     * @return mixed
-     * @throws DBException
-     */
-    private static function convertCell($oldValue, $newType)
-    {
-        if ($oldValue === null) {
-            return null;
-        }
-        switch ($newType) {
-            case 'LONGLONG':
-            case 'LONG':
-                return (int)$oldValue;
-            case 'VAR_STRING':
-            case 'STRING':
-            case 'BLOB':
-                return (string)$oldValue;
-            case 'NEWDECIMAL':
-                return floatval($oldValue);
-            case 'DOUBLE':
-                return doubleval($oldValue);
-            case 'TINY':
-                return (bool)$oldValue;
-            default:
-                throw new DBException(sprintf('Invalid type: %s', $newType));
-        }
     }
 }

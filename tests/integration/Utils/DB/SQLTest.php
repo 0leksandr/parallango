@@ -98,7 +98,8 @@ SQL;
     {
         $this->assertSame(
             4,
-            $this->SUT->getSingle(':query', ['query' => new Literal(<<<'SQL'
+            $this->SUT->getSingle(':query', ['query' => new Literal(
+                <<<'SQL'
                 SELECT 4
 SQL
             )])
@@ -127,7 +128,7 @@ SQL
     {
         $result = $this->SUT->getSingle(
             <<<'SQL'
-                SELECT :aa + :bb
+            SELECT :aa + :bb
 SQL
             ,
             [
@@ -244,5 +245,47 @@ SQL
             UNION SELECT 4
 SQL
         ));
+    }
+
+    /**
+     * @test
+     */
+    public function testGrouping()
+    {
+        $this->SUT->execute(
+            <<<'SQL'
+            CREATE TEMPORARY TABLE test (
+                test1 INTEGER NOT NULL,
+                test2 VARCHAR(10) NOT NULL
+            )
+SQL
+        );
+        $this->SUT->execute(
+            <<<'SQL'
+            INSERT INTO test(test1, test2)
+            VALUES (1, 'abc'), (1, 'def'), (2, 'ghi'), (2, 'jkl'), (3, 'mno')
+SQL
+        );
+        $this->assertEquals(
+            [
+                ['test1' => 1, 'test2' => ['abc', 'def']],
+                ['test1' => 2, 'test2' => ['ghi', 'jkl']],
+                ['test1' => 3, 'test2' => ['mno']],
+            ],
+            $this->SUT->getArray(
+                <<<'SQL'
+                SELECT
+                    test1,
+                    GROUP_CONCAT(test2 SEPARATOR '::') AS test2__TEXT
+                FROM test
+                GROUP BY test1
+SQL
+            )
+        );
+        $this->SUT->execute(
+            <<<'SQL'
+            DROP TABLE test
+SQL
+        );
     }
 }

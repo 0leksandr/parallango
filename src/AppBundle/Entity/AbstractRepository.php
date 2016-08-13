@@ -48,9 +48,14 @@ abstract class AbstractRepository
             foreach ($fields as $field) {
                 if (!isset($row[$field])) {
                     throw new Exception(sprintf(
-                        'Missing required field %s. Available fields: %s',
+                        <<<'TEXT'
+Missing required field %s. Available fields: %s.
+Row: %s
+TEXT
+                        ,
                         $field,
-                        implode(', ', array_keys($row))
+                        implode(', ', array_keys($row)),
+                        print_r($row, true)
                     ));
                 }
             }
@@ -63,7 +68,7 @@ abstract class AbstractRepository
      * @return mixed
      * @throws Exception
      */
-    protected function getValueFromMultipleRows(array $rows, $key)
+    protected function getValueFromMultipleRows(array $rows, $key) // TODO: remove?
     {
         $values = array_unique(ipull($rows, $key));
         if (count($values) !== 1) {
@@ -79,7 +84,7 @@ abstract class AbstractRepository
      * @param array $rows
      * @return int|string
      */
-    protected function getIdFromMultipleRows(array $rows)
+    protected function getIdFromMultipleRows(array $rows) // TODO: remove?
     {
         return $this->getValueFromMultipleRows($rows, 'id');
     }

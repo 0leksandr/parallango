@@ -11,7 +11,7 @@ require_once __DIR__ . '/../Utils.php';
 
 class Statement
 {
-    const MAX_LIMIT = 18446744073709551615;
+    const MAX_LIMIT = 9223372036854775807;// 18446744073709551615;
     const MAX_NR_PARAMETERS = 65535;
 
     /** @var PDO */
@@ -61,11 +61,21 @@ class Statement
         }
         /** @var PDOStatement $statement */
         foreach ($this->paramsToBind as $param) {
-            $statement->bindValue(
-                $param['name'],
-                $param['value'],
-                $param['type']
-            );
+            try {
+                $statement->bindValue(
+                    $param['name'],
+                    $param['value'],
+                    $param['type']
+                );
+            } catch (PDOException $ex) {
+                if (!in_array($ex->getCode(), [
+                    'HY093',
+                ]) && !in_array($ex->getMessage(), [
+                    'Invalid parameter number: parameter was not defined',
+                ])) {
+                    SQL::reThrowEx($ex, $this->query, $params);
+                }
+            }
         }
 
         $executed = false;

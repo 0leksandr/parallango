@@ -1,7 +1,7 @@
 <div id="preview">
     {{ random_page }}
     <div id="preview_background">
-		<span>{{ "random_book_preview"|trans }}</span>
+		<span>{{ "random-book-preview"|trans }}</span>
 		<span class="italic">
 			({{ book.author.name(language) }}, "{{ book.title(language) }}")
 		</span>
@@ -23,11 +23,34 @@
 	</table>
 </div>
 
-{% include '@App/list/list.html.twig' with {
-	header: 'items-header-authors'|trans,
+{% set active = false %}
+{% set nofollow = false %}
+
+{# TODO: use "type" based on class of items #}
+{# TODO: remove "id" #}
+{% include "@App/list/list.html.twig" with {
+	header: "items-header-authors"|trans,
 	items: authors,
-	type: 'author',
-	active: false,
-	id: 'authors',
-	nofollow: false
+	type: "author",
+	active: active,
+	id: "authors",
+	nofollow: nofollow
+} %}
+
+{% include "@App/list/list.html.twig" with {
+	header: "items-header-sections"|trans,
+	items: sections,
+	type: "section",
+	active: active,
+	id: "sections",
+	nofollow: nofollow
+} %}
+
+{% include "@App/list/list.html.twig" with {
+	header: "items-header-books"|trans,
+	items: parallangos,
+	type: "parallango",
+	active: active,
+	id: "parallangos",
+	nofollow: nofollow
 } %}

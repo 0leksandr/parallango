@@ -78,8 +78,8 @@ SQL
                     # TODO: same as authors
                     AND mnbs.language1_id = 1
                     AND mnbs.language2_id = 3
-            WHERE
-                s.id IN :ids
+            WHERE s.id IN :ids
+            ORDER BY mnbs.nr_books DESC
 SQL;
     }
 }

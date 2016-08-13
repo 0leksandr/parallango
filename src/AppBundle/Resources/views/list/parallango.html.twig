@@ -1,5 +1,5 @@
-{% include 'item.html.twig' with {
-    href: '/book/' ~ parallango.id,
+{% include "@App/list/item.html.twig" with {
+    href: "/book/" ~ parallango.id,
     text: parallango.title(language),
     additional: parallango.author.name(language),
     nofollow: nofollow

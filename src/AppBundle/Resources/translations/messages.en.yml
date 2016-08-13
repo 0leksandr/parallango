@@ -13,5 +13,10 @@ registration-form-password-confirmation: Confirm password:
 
 default-page-title: Learn English by reading books.
 default-page-description: Read interesting books in original, with parallel translation. Learn english easy, anywhere, on Your mobile device, on the road
-default-page-keywords:  Learn English, read books in original, parallel translation, read books in English
+default-page-keywords: Learn English, read books in original, parallel translation, read books in English
 mobile-preview: Read|books|in English|with|paraller|translation
+
+random-book-preview: random book preview
+items-header-authors: Authors
+items-header-sections: Sections
+items-header-books: Books

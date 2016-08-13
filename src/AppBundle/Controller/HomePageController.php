@@ -32,6 +32,14 @@ class HomePageController extends PageController
                 'authors' => $this
                     ->get('author')
                     ->getAll(),
+            ] + [
+                'sections' => $this
+                    ->get('section')
+                    ->getAll(),
+            ] + [
+                'parallangos' => $this
+                    ->get('parallango')
+                    ->getAll(),
             ];
     }
 

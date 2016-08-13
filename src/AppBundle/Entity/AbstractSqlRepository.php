@@ -34,7 +34,7 @@ abstract class AbstractSqlRepository extends AbstractRepository
     {
         $data = $this->sql->getArray(
             $this->getDataByIdsQuery(),
-            ['ids' => $ids]
+            $this->extendParams(['ids' => $ids])
         );
         if ($data === null) {
             $this->throwEx(sprintf(
@@ -67,7 +67,10 @@ abstract class AbstractSqlRepository extends AbstractRepository
     {
         $data = $this->sql->getArray(
             $this->getDataByIdsQuery(),
-            array_merge(['ids' => new Literal('(' . $query . ')')], $params)
+            array_merge(
+                ['ids' => new Literal('(' . $query . ')')],
+                $this->extendParams($params)
+            )
         );
 
         return $this->getByData($data);
@@ -147,5 +150,26 @@ abstract class AbstractSqlRepository extends AbstractRepository
                 implode(', ', $missingIds)
             ));
         }
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function extendParams(array $params)
+    {
+//        foreach ([
+//            'LIMIT' => null,
+//            'offset' => 0,
+//        ] as $param => $value) {
+//            if (!isset($params[$param])) {
+//                $params[$param] = $value;
+//            }
+//        }
+//        return $params;
+        return $params + [
+            'LIMIT' => null,
+            'offset' => 0,
+        ]; //TODO: check
     }
 }
