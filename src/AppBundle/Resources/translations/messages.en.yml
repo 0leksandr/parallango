@@ -20,3 +20,7 @@ random-book-preview: random book preview
 items-header-authors: Authors
 items-header-sections: Sections
 items-header-books: Books
+
+author-page-title: Read %1%'s books in original, with parallel translation # TODO: correct option
+author-page-keywords: "%1%'s books"
+author-page-description: "%1%'s books in English, with parallel translation."

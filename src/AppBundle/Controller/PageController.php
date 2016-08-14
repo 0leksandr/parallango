@@ -5,49 +5,58 @@ namespace AppBundle\Controller;
 //use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Language\Language;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as SymfonyController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class PageController extends SymfonyController
 {
     /** @var Language[] */
     private $availableLanguages;
-    /** @var string */
-    private $languageCode;
     /** @var bool */
     private $isDesktopVersion;
+    /** @var Request */
+    private $request;
+
+    /** @var string */
+    private $languageCode;
+    /** @var TranslatorInterface */
+    private $translator;
 
     /**
      * @return string
      */
-    abstract public function getViewName();
+    abstract protected function getViewName();
 
     /**
-     * @param Request $request
-     * @return array|null
+     * @return array
      */
-    abstract public function getParameters(Request $request);
+    abstract protected function getParameters();
 
     /**
      * @return string
      */
-    abstract public function getPageTitle();
+    abstract protected function getPageTitle();
 
     /**
      * @return string[]
      */
-    abstract public function getKeywords();
+    abstract protected function getKeywords();
 
     /**
      * @return string
      */
-    abstract public function getDescription();
+    abstract protected function getDescription();
 
     /**
      * @return string[]|null
      */
-    abstract public function getRobots();
+    abstract protected function getRobots();
+
+    /**
+     * @return array
+     */
+    abstract protected function getRequestParams();
 
     /**
      * @param string $languageCode
@@ -62,34 +71,16 @@ abstract class PageController extends SymfonyController
     }
 
     /**
-     * @return string|null
-     */
-    public function getPageClass()
-    {
-        return null;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getStylesheets()
-    {
-        return [];
-    }
-
-    public function initialize()
-    {
-    }
-
-    /**
      * @param Request $request
      * @return Response
      */
     public final function indexAction(Request $request)
     {
+        $this->request = $request;
+        $this->initialize();
         $response = $this->render(
             'AppBundle::page.html.twig',
-            $this->getAllParameters($request)
+            $this->getAllParameters()
         );
         $response->headers->add([
             'Content-Type' => 'text/html',
@@ -100,18 +91,46 @@ abstract class PageController extends SymfonyController
     }
 
     /**
-     * @param ContainerInterface|null $container
+     * @return Request
      */
-    public final function setContainer(ContainerInterface $container = null)
+    public function getRequest()
     {
-        parent::setContainer($container);
-        $this->initialize();
+        return $this->request;
+    }
+
+    /**
+     * @return string|null
+     */
+    protected function getPageClass()
+    {
+        return null;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getStylesheets()
+    {
+        return [];
+    }
+
+    protected function initialize()
+    {
+        $this->translator = $this->get('translator');
+    }
+
+    /**
+     * @return TranslatorInterface
+     */
+    protected function getTranslator()
+    {
+        return $this->translator;
     }
 
     /**
      * @return Language
      */
-    private function getLanguage()
+    protected function getLanguage()
     {
         return $this->get('language')->get($this->languageCode);
     }
@@ -128,12 +147,11 @@ abstract class PageController extends SymfonyController
     }
 
     /**
-     * @param Request $request
      * @return array
      */
-    private function getAllParameters(Request $request)
+    private function getAllParameters()
     {
-        return array_merge($this->getParameters($request) ?: [], [
+        return array_merge($this->getParameters(), [
             'view' => $this->getViewName(),
             'is_desktop_version' => $this->isDesktopVersion,
             'language' => $this->getLanguage(),
@@ -145,6 +163,7 @@ abstract class PageController extends SymfonyController
             'stylesheets' => ['style.css'] + $this->getStylesheets(),
             'path_static' => 'http://localhost:8000',
             'page_class' => $this->getPageClass(),
+            'request_params' => $this->getRequestParams(),
         ]);
     }
 }

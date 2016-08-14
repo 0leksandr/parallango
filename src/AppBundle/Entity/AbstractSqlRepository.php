@@ -68,7 +68,13 @@ abstract class AbstractSqlRepository extends AbstractRepository
         $data = $this->sql->getArray(
             $this->getDataByIdsQuery(),
             array_merge(
-                ['ids' => new Literal('(' . $query . ')')],
+                ['ids' => new Literal(
+                    <<<TEXT
+(
+    {$query}
+)
+TEXT
+                )],
                 $this->extendParams($params)
             )
         );
@@ -158,18 +164,9 @@ abstract class AbstractSqlRepository extends AbstractRepository
      */
     private function extendParams(array $params)
     {
-//        foreach ([
-//            'LIMIT' => null,
-//            'offset' => 0,
-//        ] as $param => $value) {
-//            if (!isset($params[$param])) {
-//                $params[$param] = $value;
-//            }
-//        }
-//        return $params;
         return $params + [
             'LIMIT' => null,
             'offset' => 0,
-        ]; //TODO: check
+        ];
     }
 }

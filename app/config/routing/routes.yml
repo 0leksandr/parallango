@@ -9,3 +9,10 @@ feedback:
 registration:
     path: /registration
     defaults: { _controller: AppBundle:Registration:registerUser }
+
+author:
+    path: /author/{authorId}
+    defaults: { _controller: AppBundle:Author:index }
+    methods: [GET]
+    requirements:
+        authorId: \d+

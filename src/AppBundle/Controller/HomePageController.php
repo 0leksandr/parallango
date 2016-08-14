@@ -3,27 +3,22 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Language\Language;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class HomePageController extends PageController
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
     /**
      * @return string
      */
-    public function getViewName()
+    protected function getViewName()
     {
         return 'home';
     }
 
     /**
-     * @param Request $request
-     * @return array|null
+     * @return array
      */
-    public function getParameters(Request $request)
+    protected function getParameters()
     {
         return
             $this->getPreview()
@@ -32,11 +27,13 @@ class HomePageController extends PageController
                 'authors' => $this
                     ->get('author')
                     ->getAll(),
-            ] + [
+            ]
+            + [
                 'sections' => $this
                     ->get('section')
                     ->getAll(),
-            ] + [
+            ]
+            + [
                 'parallangos' => $this
                     ->get('parallango')
                     ->getAll(),
@@ -46,50 +43,50 @@ class HomePageController extends PageController
     /**
      * @return string
      */
-    public function getPageTitle()
+    protected function getPageTitle()
     {
-        return $this->translator->trans('default-page-title');
+        return $this->getTranslator()->trans('default-page-title');
     }
 
     /**
      * @return string[]
      */
-    public function getKeywords()
+    protected function getKeywords()
     {
-//        return [
-//            'Learn English',
-//            'read books in original',
-//            'parallel translation',
-//            'read books in English',
-//        ];
-        return [$this->translator->trans('default-page-keywords')];
+        return array_map('trim', explode(
+            ',',
+            $this->getTranslator()->trans('default-page-keywords')
+        ));
     }
 
     /**
      * @return string
      */
-    public function getDescription()
+    protected function getDescription()
     {
-        return $this->translator->trans('default-page-description');
+        return $this->getTranslator()->trans('default-page-description');
     }
 
     /**
      * @return string[]|null
      */
-    public function getRobots()
+    protected function getRobots()
     {
         return null;
     }
 
-    public function initialize()
+    /**
+     * @return array
+     */
+    protected function getRequestParams()
     {
-        $this->translator = $this->get('translator');
+        return [];
     }
 
     /**
      * @return string
      */
-    public function getPageClass()
+    protected function getPageClass()
     {
         return 'page_index';
     }
@@ -169,10 +166,10 @@ class HomePageController extends PageController
     {
         $translators = [];
         foreach ($this->getLanguages() as $language) {
-            if ($this->translator->getLocale() === $language->getCode()) {
-                $translators[] = $this->translator;
+            if ($this->getTranslator()->getLocale() === $language->getCode()) {
+                $translators[] = $this->getTranslator();
             } else {
-                $translator = clone $this->translator;
+                $translator = clone $this->getTranslator();
                 $translator->setLocale($language->getCode());
                 $translators[] = $translator;
             }

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity\Parallango;
 
 use AppBundle\Entity\AbstractSqlRepository;
+use AppBundle\Entity\Author\Author;
 use AppBundle\Entity\Book\BookRepository;
 use Utils\DB\SQL;
 
@@ -58,14 +59,40 @@ SQL
             )) - 1]
         );
 
-        $res= $this->getSingleBySelectIdQuery(
+        return $this->getSingleBySelectIdQuery(
             <<<'SQL'
             SELECT :id
 SQL
             ,
             ['id' => $id]
         );
-        return $res;
+    }
+
+    /**
+     * @param Author $author
+     * @return Parallango[]
+     */
+    public function getByAuthor(Author $author)
+    {
+        return $this->getBySelectIdsQuery(
+            <<<'SQL'
+            SELECT id
+            FROM parallangos
+            WHERE
+                left_book_id IN (
+                    SELECT id
+                    FROM books
+                    WHERE author_id = :author_id
+                )
+#                 AND right_book_id IN (
+#                     SELECT id
+#                     FROM books
+#                     WHERE author_id = :author_id
+#                 )
+SQL
+            ,
+            ['author_id' => $author->getId()]
+        );
     }
 
     /**
