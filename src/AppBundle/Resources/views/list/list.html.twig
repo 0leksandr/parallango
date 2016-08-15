@@ -1,43 +1,33 @@
+{#require: id, active, header, items, type, language, nofollow#}
+
 <div
-        class="items {% if active %}active{% else %}inactive{% endif %} loadable"
-        id="{{ id }}"
-        {#".private_loadable_descriptor($id,array("where"=>$where,"order"=>$order))."#}
+    class="list {% if active %}active{% else %}inactive{% endif %} loadable"
+    id="{{ id }}"
+    data-type="{{ type }}"
+    {#".private_loadable_descriptor($id,array("where"=>$where,"order"=>$order))."#}
 >
     <h1 class="items_header">
         <a
-                {# TODO: is this needed? #}
-                {#href="{{ url(path, {#}
-                    {#_locale: _locale,#}
-                    {#is_desktop_version: is_desktop_version#}
-                {#}) }}"#}
-                {#onclick="switch_to_list($(this).parent().parent())"#}
+            {#href="{{ url(path, {#}
+                {#_locale: _locale,#}
+                {#is_desktop_version: is_desktop_version#}
+            {#}) }}"#}
+            {#onclick="switch_to_list($(this).parent().parent())"#}
         >
             {{ header }}
             <div
-                    class="item_corner"
-                    style="border-color:{{ random_color() }};"
+                class="item_corner"
+                style="border-color:{{ random_color() }};"
             ></div>
         </a>
     </h1>
-    {% for item in items %}
-        {% if type == "author" %}
-            {% include "@App/list/author.html.twig" with {
-                author: item,
-                nofollow: nofollow
-            } %}
-        {% elseif type == "parallango" %}
-            {% include "@App/list/parallango.html.twig" with {
-                parallango: item,
-                nofollow: nofollow
-            } %}
-        {% elseif type == "section" %}
-            {% include "@App/list/section.html.twig" with {
-                section: item,
-                nofollow: nofollow
-            } %}
-        {% else %}
-            {# TODO: throw exception #}
-        {% endif %}
-    {% endfor %}
-    <div class="af"></div>
+    <div class="items">
+        {% include '@App/list/items.html.twig' with {
+            items: items,
+            type: type,
+            language: language,
+            nofollow: nofollow
+        } %}
+        <div class="af"></div>
+    </div>
 </div>

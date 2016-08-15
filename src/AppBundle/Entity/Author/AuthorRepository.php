@@ -57,15 +57,6 @@ SQL
             ['id', 'property_name', 'language_id', 'property_value', 'nr_books']
         );
 
-//        $author = new Author($this->getIdFromMultipleRows($data));
-//        foreach ($data as $row) {
-//            $author->set(
-//                $row['property_name'],
-//                $this->languageRepository->getById($row['language_id']),
-//                $row['property_value']
-//            );
-//        }
-//        $author->setNrBooks($this->getValueFromMultipleRows($data, 'nr_books'));
         $data = $this->getRowFromArray($data);
         $author = new Author($data['id']);
         foreach (array_keys($data['property_name']) as $key) {

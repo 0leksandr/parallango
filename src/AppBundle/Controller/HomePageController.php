@@ -20,23 +20,25 @@ class HomePageController extends PageController
      */
     protected function getParameters()
     {
+        $nrItems = 50;
+
         return
             $this->getPreview()
             + $this->getMobilePreview()
             + [
                 'authors' => $this
                     ->get('author')
-                    ->getAll(),
+                    ->getAll($nrItems),
             ]
             + [
                 'sections' => $this
                     ->get('section')
-                    ->getAll(),
+                    ->getAll($nrItems),
             ]
             + [
                 'parallangos' => $this
                     ->get('parallango')
-                    ->getAll(),
+                    ->getAll($nrItems),
             ];
     }
 

@@ -27,15 +27,22 @@ class SectionRepository extends AbstractSqlRepository
     }
 
     /**
+     * @param int|null $limit
+     * @param int $offset
      * @return Section[]
      */
-    public function getAll()
+    public function getAll($limit = null, $offset = 0)
     {
         return $this->getBySelectIdsQuery(
             <<<'SQL'
             SELECT id
             FROM sections
 SQL
+            ,
+            [
+                'LIMIT' => $limit,
+                'offset' => $offset,
+            ]
         );
     }
 
@@ -46,14 +53,14 @@ SQL
     protected function createByData(array $data)
     {
         $this->mandatory($data, ['id', 'language_id', 'title', 'nr_books']);
-        $section = new Section($this->getIdFromMultipleRows($data));
-        foreach ($data as $row) {
-            $language = $this->languageRepository->getById($row['language_id']);
-            $section->addTitle($language, $row['title']);
+        $row = $this->getRowFromArray($data);
+        $section = new Section($row['id']);
+        foreach ($row['language_id'] as $key => $languageId) {
+            $language = $this->languageRepository->getById($languageId);
+            $title = $row['title'][$key];
+            $section->addTitle($language, $title);
         }
-        $section->setNrBooks(
-            $this->getValueFromMultipleRows($data, 'nr_books')
-        );
+        $section->setNrBooks($row['nr_books']);
 
         return $section;
     }
@@ -66,8 +73,10 @@ SQL
         return <<<'SQL'
             SELECT
                 s.id,
-                st.language_id,
-                st.title,
+                GROUP_CONCAT(st.language_id SEPARATOR '::')
+                    AS language_id__INT,
+                GROUP_CONCAT(st.title SEPARATOR '::')
+                    AS title__TEXT,
                 mnbs.nr_books
             FROM
                 sections s
@@ -79,7 +88,9 @@ SQL
                     AND mnbs.language1_id = 1
                     AND mnbs.language2_id = 3
             WHERE s.id IN :ids
+            GROUP BY s.id
             ORDER BY mnbs.nr_books DESC
+            LIMIT :LIMIT OFFSET :offset
 SQL;
     }
 }

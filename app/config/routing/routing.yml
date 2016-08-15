@@ -3,3 +3,12 @@ specified_language:
     resource: routes.yml
     requirements:
         _locale: "|en|ru" #http://stackoverflow.com/questions/7903477/symfony2-default-locale-in-routing
+
+items:
+    path: /{languageCode}/{itemsType}/{offset}
+    defaults: { _controller: AppBundle:Items:index }
+    methods: [POST]
+    requirements:
+        languageCode: (en|ru)
+        itemsType: (author|section|parallango)
+        offset: \d+

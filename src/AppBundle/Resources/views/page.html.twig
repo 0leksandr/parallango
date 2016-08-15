@@ -202,6 +202,12 @@
             </div>
         </div>
         <div id="screen_bottom"></div>
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            <script type="text/javascript">
+                var languageCode = "{{ language.code }}";
+            </script>
+            <script type="text/javascript" src="{{ asset('js/jquery-2.1.0.js') }}"></script> {#TODO: use composer?#}
+            <script type="text/javascript" src="{{ asset('js/main.js') }}"></script>
+        {% endblock %}
     </body>
 </html>

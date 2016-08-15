@@ -1,3 +1,5 @@
+{#require: section, language, nofollow#}
+
 {% include "@App/list/item.html.twig" with {
     href: "/section/" ~ section.id,
     text: section.title(language),

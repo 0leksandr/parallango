@@ -26,15 +26,22 @@ class ParallangoRepository extends AbstractSqlRepository
     }
 
     /**
+     * @param int|null $limit
+     * @param int $offset
      * @return Parallango[]
      */
-    public function getAll()
+    public function getAll($limit = null, $offset = 0)
     {
         return $this->getBySelectIdsQuery(
             <<<'SQL'
             SELECT id
             FROM parallangos
 SQL
+            ,
+            [
+                'LIMIT' => $limit,
+                'offset' => $offset,
+            ]
         );
     }
 
@@ -121,6 +128,7 @@ SQL
                 right_book_id
             FROM parallangos
             WHERE id IN :ids
+            LIMIT :LIMIT OFFSET :offset
 SQL;
     }
 }
