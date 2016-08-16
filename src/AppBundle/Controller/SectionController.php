@@ -2,12 +2,12 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Author\Author;
+use AppBundle\Entity\Section\Section;
 
-class AuthorController extends PageController
+class SectionController extends PageController
 {
-    /** @var Author */
-    private $author;
+    /** @var Section */
+    private $section;
 
     /**
      * @return string
@@ -25,7 +25,7 @@ class AuthorController extends PageController
         return [
             'parallangos' => $this
                 ->get('parallango')
-                ->getByAuthor($this->author),
+                ->getBySection($this->section),
         ];
     }
 
@@ -34,10 +34,7 @@ class AuthorController extends PageController
      */
     protected function getPageTitle()
     {
-        $this->getTranslator()->trans(
-            'author-page-title',
-            ['%1%' => $this->author->getName($this->getLanguage())] // TODO: make it right
-        );
+        return $this->getTranslator()->trans('section-page-title');
     }
 
     /**
@@ -48,8 +45,8 @@ class AuthorController extends PageController
         return array_merge(explode(
             ',',
             $this->getTranslator()->trans(
-                'author-page-keywords',
-                ['%1%' => $this->author->getName($this->getLanguage())]
+                'section-page-keywords',
+                ['%1%' => $this->section->getTitle($this->getLanguage())]
             )
         ), explode(
             ',',
@@ -62,10 +59,7 @@ class AuthorController extends PageController
      */
     protected function getDescription()
     {
-        return $this->getTranslator()->trans(
-            'author-page-description',
-            ['%1%' => $this->author->getName($this->getLanguage())]
-        );
+        return $this->getTranslator()->trans('section-page-description');
     }
 
     /**
@@ -81,14 +75,14 @@ class AuthorController extends PageController
      */
     protected function getRequestParams()
     {
-        return ['authorId' => $this->author->getId()];
+        return ['sectionId' => $this->section->getId()];
     }
 
     protected function initialize()
     {
         parent::initialize();
-        $this->author = $this
-            ->get('author')
-            ->getById($this->getRequest()->get('authorId'));
+        $this->section = $this
+            ->get('section')
+            ->getById($this->getRequest()->get('sectionId'));
     }
 }

@@ -5,10 +5,12 @@ namespace AppBundle\Entity\Parallango;
 use AppBundle\Entity\AbstractSqlRepository;
 use AppBundle\Entity\Author\Author;
 use AppBundle\Entity\Book\BookRepository;
+use AppBundle\Entity\Section\Section;
 use Utils\DB\SQL;
 
 /**
  * @method Parallango getById($id)
+ * @method Parallango[] getBySelectIdsQuery($query, array $params = [])
  */
 class ParallangoRepository extends AbstractSqlRepository
 {
@@ -89,16 +91,49 @@ SQL
                 left_book_id IN (
                     SELECT id
                     FROM books
-                    WHERE author_id = :author_id
+                    WHERE author_id = :author_id_1
                 )
 #                 AND right_book_id IN (
 #                     SELECT id
 #                     FROM books
-#                     WHERE author_id = :author_id
+#                     WHERE author_id = :author_id_2
 #                 )
 SQL
             ,
-            ['author_id' => $author->getId()]
+            [
+                'author_id_1' => $author->getId(),
+                'author_id_2' => $author->getId(), // TODO: remove
+            ]
+        );
+    }
+
+    /**
+     * @param Section $section
+     * @return Parallango[]
+     */
+    public function getBySection(Section $section)
+    {
+        return $this->getBySelectIdsQuery(
+            <<<'SQL'
+            SELECT id
+            FROM parallangos
+            WHERE
+                left_book_id IN (
+                    SELECT id
+                    FROM books
+                    WHERE section_id = :section_id_1
+                )
+                OR right_book_id IN (
+                    SELECT id
+                    FROM books
+                    WHERE section_id = :section_id_2
+                )
+SQL
+            ,
+            [
+                'section_id_1' => $section->getId(),
+                'section_id_2' => $section->getId(), // TODO: fix
+            ]
         );
     }
 

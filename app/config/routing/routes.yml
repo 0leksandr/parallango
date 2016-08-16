@@ -16,3 +16,10 @@ author:
     methods: [GET]
     requirements:
         authorId: \d+
+
+section:
+    path: /section/{sectionId}
+    defaults: { _controller: AppBundle:Section:index }
+    methods: [GET]
+    requirements:
+        sectionId: \d+

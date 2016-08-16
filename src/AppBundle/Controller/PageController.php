@@ -157,7 +157,10 @@ abstract class PageController extends SymfonyController
             'language' => $this->getLanguage(),
             'available_languages' => $this->getAvailableLanguages(),
             'title' => $this->getPageTitle(),
-            'keywords' => implode(', ', $this->getKeywords()),
+            'keywords' => implode(
+                ', ',
+                array_map('trim', $this->getKeywords())
+            ),
             'description' => $this->getDescription(),
             'robots' => $this->getRobots(),
             'stylesheets' => ['style.css'] + $this->getStylesheets(),
