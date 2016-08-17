@@ -28,3 +28,7 @@ author-page-description: "%1%'s books in English, with parallel translation."
 section-page-title: Read %1% books in original, with parallel translation
 section-page-keywords: "%1% books"
 section-page-description: "%1% books in English, with parallel translation."
+
+#book-page-title: "%1%, %2%"
+#book-page-keywords: "%1%, %2%"
+#book-page-description: "%1%, %2%"

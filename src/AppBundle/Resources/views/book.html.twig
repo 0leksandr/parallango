@@ -1,0 +1,11 @@
+{#require: page#}
+
+{% include '@App/list/pagination.html.twig' with {page: page} %}
+
+<div class = "book_read">
+    <table>
+        {{ page.text|raw }}
+    </table>
+</div>
+
+{% include '@App/list/pagination.html.twig' with {page: page} %}

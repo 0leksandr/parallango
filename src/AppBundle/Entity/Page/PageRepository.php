@@ -34,7 +34,7 @@ class PageRepository
     ) {
         $paragraphs = $this->sql->getArray(
             <<<'SQL'
-            SELECT
+            SELECT DISTINCT
                 p.order,
                 p.position_begin,
                 p.position_end
@@ -62,9 +62,12 @@ SQL
                 $paragraphFrom['order'],
                 $paragraphTo['order'],
                 $paragraphFrom['position_begin'],
-                $paragraphTo['position_end']
+                $paragraphTo['position_end'],
+                $index
             );
         }
+        $parallango->setNrPages(count($paragraphs));
+
         return $pages;
     }
 
@@ -74,6 +77,7 @@ SQL
      * @param int $lastParagraph
      * @param int $textPositionFrom
      * @param int $textPositionTo
+     * @param int $pageNumber
      * @return Page
      */
     private function create(
@@ -81,7 +85,8 @@ SQL
         $firstParagraph,
         $lastParagraph,
         $textPositionFrom,
-        $textPositionTo
+        $textPositionTo,
+        $pageNumber
     ) {
         $filename = sprintf(
             '%s/%d.html',
@@ -96,6 +101,12 @@ SQL
         );
         fclose($fhandle);
 
-        return new Page($text, $firstParagraph, $lastParagraph);
+        return new Page(
+            $parallango,
+            $text,
+            $firstParagraph,
+            $lastParagraph,
+            $pageNumber
+        );
     }
 }

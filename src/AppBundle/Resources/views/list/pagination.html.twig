@@ -1,0 +1,17 @@
+{#require: page#}
+
+<div class="pages">
+    <div>
+        {% for pagination_page in page.pages %}
+            {% if not pagination_page.active %}
+                <a class="page" href="{{ url('parallango2', {
+                    parallangoId: pagination_page.parallango.id,
+                    pageNumber: pagination_page.number + 1
+                }) }}">{{ pagination_page.text }}</a>
+            {% else %}
+                <div class="page_on">{{ pagination_page.text }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<div class="af"></div>

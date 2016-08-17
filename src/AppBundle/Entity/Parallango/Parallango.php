@@ -15,6 +15,8 @@ class Parallango extends Identifiable
     private $left;
     /** @var Book */
     private $right;
+    /** @var int|null */
+    private $nrPages;
 
     /**
      * @param int $id
@@ -71,6 +73,24 @@ class Parallango extends Identifiable
         return $this->isLeftSide($language)
             ? $this->left->getTitle()
             : $this->right->getTitle();
+    }
+
+    /**
+     * @param int $nrPages
+     * @return $this
+     */
+    public function setNrPages($nrPages)
+    {
+        $this->nrPages = $nrPages;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getNrPages()
+    {
+        return $this->nrPages;
     }
 
     /**
