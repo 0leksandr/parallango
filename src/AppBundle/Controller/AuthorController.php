@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Author\Author;
+use Symfony\Component\HttpFoundation\Request;
 
 class AuthorController extends PageController
 {
@@ -84,11 +85,22 @@ class AuthorController extends PageController
         return ['authorId' => $this->author->getId()];
     }
 
-    protected function initialize()
+    /**
+     * @return string[]
+     */
+    protected function getJavaScripts()
     {
-        parent::initialize();
+        return ['list'];
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function initialize(Request $request)
+    {
+        parent::initialize($request);
         $this->author = $this
             ->get('author')
-            ->getById($this->getRequest()->get('authorId'));
+            ->getById($request->get('authorId'));
     }
 }

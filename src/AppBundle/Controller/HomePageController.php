@@ -86,6 +86,14 @@ class HomePageController extends PageController
     }
 
     /**
+     * @return string[]
+     */
+    protected function getJavaScripts()
+    {
+        return ['list'];
+    }
+
+    /**
      * @return string
      */
     protected function getPageClass()

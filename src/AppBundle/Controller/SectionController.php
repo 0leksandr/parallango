@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Section\Section;
+use Symfony\Component\HttpFoundation\Request;
 
 class SectionController extends PageController
 {
@@ -78,11 +79,22 @@ class SectionController extends PageController
         return ['sectionId' => $this->section->getId()];
     }
 
-    protected function initialize()
+    /**
+     * @return string[]
+     */
+    protected function getJavaScripts()
     {
-        parent::initialize();
+        return ['list'];
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function initialize(Request $request)
+    {
+        parent::initialize($request);
         $this->section = $this
             ->get('section')
-            ->getById($this->getRequest()->get('sectionId'));
+            ->getById($request->get('sectionId'));
     }
 }

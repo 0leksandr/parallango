@@ -2,7 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Page\Page;
 use AppBundle\Entity\Parallango\Parallango;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ParallangoController extends PageController
 {
@@ -24,14 +27,7 @@ class ParallangoController extends PageController
      */
     protected function getParameters()
     {
-        $pageSize = $this->get('page_size')->get(10000);
-        $pages = $this
-            ->get('page')
-            ->getByParallangoAndPageSize($this->parallango, $pageSize); // TODO: optimize (get only requested page number instead of all pages)
-
-        return [
-            'page' => $pages[$this->pageNumber],
-        ];
+        return ['page' => $this->getPage()];
     }
 
     /**
@@ -77,14 +73,48 @@ class ParallangoController extends PageController
         ];
     }
 
-    protected function initialize()
+    /**
+     * @return string[]
+     */
+    protected function getJavaScripts()
     {
-        parent::initialize();
+        return ['ajax-link'];
+    }
+
+    protected function initialize(Request $request)
+    {
+        parent::initialize($request);
         $this->parallango = $this
             ->get('parallango')
-            ->getById($this->getRequest()->get('parallangoId'));
+            ->getById($request->get('parallangoId'));
         $this->pageNumber =
-            (intval($this->getRequest()->get('pageNumber')) ?: 1) - 1;
+            (intval($request->get('pageNumber')) ?: 1) - 1;
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function ajaxAction(Request $request)
+    {
+        $this->initialize($request);
+        return $this->render(
+            '@App/book.html.twig',
+            ['page' => $this->getPage()]
+        );
+    }
+
+    /**
+     * @return Page
+     */
+    private function getPage()
+    {
+        $pageSize = $this->get('page_size')->get(10000);
+        $pages = $this
+            ->get('page')
+            ->getByParallangoAndPageSize($this->parallango, $pageSize); // TODO: optimize (get only requested page number instead of all pages)
+
+        return $pages[$this->pageNumber];
     }
 
     /**

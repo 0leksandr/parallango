@@ -37,3 +37,10 @@ parallango2:
     requirements:
         parallangoId: \d+
         pageNumber: \d+
+parallango_ajax:
+    path: /book/{parallangoId}/{pageNumber}
+    defaults: { _controller: AppBundle:Parallango:ajax }
+    methods: [POST]
+    requirements:
+        parallangoId: \d+
+        pageNumber: \d+

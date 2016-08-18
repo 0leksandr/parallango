@@ -1,5 +1,5 @@
 <div id="preview">
-    {{ random_page }}
+    {{ random_page.text|raw }}
     <div id="preview_background">
 		<span>{{ "random-book-preview"|trans }}</span>
 		<span class="italic">
@@ -8,19 +8,21 @@
     </div>
 </div>
 
-<div id=preview_mobile>
-	<table class=book_read>
-		{% for mobile_preview_row in mobile_preview_rows %}
-			<tr>
-				<td>
-					{{ mobile_preview_row[0] }}
-				</td>
-				<td>
-					{{ mobile_preview_row[1] }}
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
+<div id="preview_mobile">
+	<div id="parallango">
+		<table>
+			{% for mobile_preview_row in mobile_preview_rows %}
+				<tr>
+					<td>
+						{{ mobile_preview_row[0] }}
+					</td>
+					<td>
+						{{ mobile_preview_row[1] }}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
 </div>
 
 {% set active = false %}

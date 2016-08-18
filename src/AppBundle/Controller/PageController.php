@@ -2,7 +2,6 @@
 
 namespace AppBundle\Controller;
 
-//use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use AppBundle\Entity\Language\Language;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as SymfonyController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +14,6 @@ abstract class PageController extends SymfonyController
     private $availableLanguages;
     /** @var bool */
     private $isDesktopVersion;
-    /** @var Request */
-    private $request;
 
     /** @var string */
     private $languageCode;
@@ -59,6 +56,11 @@ abstract class PageController extends SymfonyController
     abstract protected function getRequestParams();
 
     /**
+     * @return string[]
+     */
+    abstract protected function getJavaScripts();
+
+    /**
      * @param string $languageCode
      * @param bool $isDesktopVersion
      */
@@ -76,8 +78,7 @@ abstract class PageController extends SymfonyController
      */
     public final function indexAction(Request $request)
     {
-        $this->request = $request;
-        $this->initialize();
+        $this->initialize($request);
         $response = $this->render(
             'AppBundle::page.html.twig',
             $this->getAllParameters()
@@ -88,14 +89,6 @@ abstract class PageController extends SymfonyController
         ]);
 
         return $response;
-    }
-
-    /**
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
     }
 
     /**
@@ -114,7 +107,10 @@ abstract class PageController extends SymfonyController
         return [];
     }
 
-    protected function initialize()
+    /**
+     * @param Request $request
+     */
+    protected function initialize(Request $request)
     {
         $this->translator = $this->get('translator');
     }
@@ -164,6 +160,7 @@ abstract class PageController extends SymfonyController
             'description' => $this->getDescription(),
             'robots' => $this->getRobots(),
             'stylesheets' => ['style.css'] + $this->getStylesheets(),
+            'scripts' => $this->getJavaScripts(),
             'path_static' => 'http://localhost:8000',
             'page_class' => $this->getPageClass(),
             'request_params' => $this->getRequestParams(),

@@ -62,7 +62,8 @@ SQL
             ,
             ['random' => rand(1, $this->sql->getSingle(
                 <<<'SQL'
-                SELECT COUNT(*)
+#                 SELECT COUNT(*)
+select 1
                 FROM parallangos
 SQL
             )) - 1]

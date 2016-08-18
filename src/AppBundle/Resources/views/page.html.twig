@@ -79,7 +79,7 @@
                                     {#{% image '@AppBundle/Resources/images/loading.gif' %}#}
                                         {#<img src="{{ asset_url }}" alt="loading.." />#}
                                     {#{% endimage %}#}
-                                    <img id="loading_img" src="{{ asset('images/loading.gif') }}" alt="loading.." width="32px" height="32px"/>
+                                    {#<img id="loading_img" src="{{ asset('images/loading.gif') }}" alt="loading.." width="32px" height="32px"/>#}
                                 </div>
                                 <div id="authorization_front_table">
                                     <div id="authorization_front"></div>
@@ -202,12 +202,22 @@
             </div>
         </div>
         <div id="screen_bottom"></div>
+        <img src="{{ asset('images/loading.gif') }}"
+             style="visibility: hidden;"
+             id="loading_img"
+             alt="loading...">
         {% block javascripts %}
             <script type="text/javascript">
                 var languageCode = "{{ language.code }}";
             </script>
-            <script type="text/javascript" src="{{ asset('js/jquery-2.1.0.js') }}"></script> {#TODO: use composer?#}
-            <script type="text/javascript" src="{{ asset('js/main.js') }}"></script>
+            <script type="text/javascript"
+                    src="{{ asset('js/jquery-2.1.0.js') }}"></script> {#TODO: use composer?#}
+            <script type="text/javascript"
+                    src="{{ asset('js/main.js') }}"></script>
+            {% for script in scripts %}
+                <script type="text/javascript"
+                        src="{{ asset('js/' ~ script ~ '.js') }}"></script>
+            {% endfor %}
         {% endblock %}
     </body>
 </html>

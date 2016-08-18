@@ -178,14 +178,14 @@ body {
     left: 0;
     visibility: hidden;
 }
-#loading_img {
-    display: block;
-    margin-left: auto;margin-right: auto;
-    opacity: 0;
-    z-index: 50;
-    position: relative;
-    top: -25%;
-}
+/*#loading_img {*/
+    /*display: block;*/
+    /*margin-left: auto;margin-right: auto;*/
+    /*opacity: 0;*/
+    /*z-index: 50;*/
+    /*position: relative;*/
+    /*top: -25%;*/
+/*}*/
 #authorization_front_table {
     position: absolute;
     width: 86%;
@@ -466,10 +466,10 @@ form#search input[type="submit"] {
     position: fixed; bottom: 0;
 }
 
-.book_read, .book_read > table {
+#parallango, #parallango > table {
     width: 100%;
 }
-.book_read td {
+#parallango td {
     width: 50%;
     /*text-align: justify;*/
     padding: 0 10px;

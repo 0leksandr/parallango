@@ -31,7 +31,7 @@ class PageRepository
     public function getByParallangoAndPageSize(
         Parallango $parallango,
         PageSize $pageSize
-    ) {
+    ) { // TODO: do not return ALL pages, only the needed one
         $paragraphs = $this->sql->getArray(
             <<<'SQL'
             SELECT DISTINCT
@@ -93,7 +93,7 @@ SQL
             $this->booksPath,
             $parallango->getId()
         );
-        $fhandle = fopen($filename, 'r');
+        $fhandle = fopen($filename, 'r'); // TODO: do not reopen new handle, use existing
         fseek($fhandle, $textPositionFrom);
         $text = fgets(
             $fhandle,
