@@ -218,6 +218,11 @@
                 <script type="text/javascript"
                         src="{{ asset('js/' ~ script ~ '.js') }}"></script>
             {% endfor %}
+            <script type="text/javascript">
+//                $(document).ready(function () {
+                    onReady();
+//                });
+            </script>
         {% endblock %}
     </body>
 </html>

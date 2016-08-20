@@ -4,10 +4,15 @@
     <div>
         {% for pagination_page in page.pages %}
             {% if not pagination_page.active %}
-                <a class="page" href="{{ url('parallango2', {
-                    parallangoId: pagination_page.parallango.id,
-                    pageNumber: pagination_page.number + 1
-                }) }}">{{ pagination_page.text }}</a>
+                <a
+                        class="page"
+                        href="{{ url('parallango2', {
+                            parallangoId: pagination_page.parallango.id,
+                            pageNumber: pagination_page.number + 1
+                        }) }}"
+                        data-is-next="{{ pagination_page.isNext }}">
+                    {{ pagination_page.text|raw }}
+                </a>
             {% else %}
                 <div class="page_on">{{ pagination_page.text }}</div>
             {% endif %}

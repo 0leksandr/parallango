@@ -3,7 +3,9 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Language\Language;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as SymfonyController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -74,21 +76,21 @@ abstract class PageController extends SymfonyController
 
     /**
      * @param Request $request
-     * @return Response
+     * @return Response|JsonResponse
+     * @throws Exception
      */
     public final function indexAction(Request $request)
     {
         $this->initialize($request);
-        $response = $this->render(
-            'AppBundle::page.html.twig',
-            $this->getAllParameters()
-        );
-        $response->headers->add([
-            'Content-Type' => 'text/html',
-            'charset' => 'utf-8',
-        ]);
-
-        return $response;
+        $method = $request->getMethod();
+        switch ($method) {
+            case 'GET':
+                return $this->getIndexResponse();
+            case 'POST':
+                return $this->getAjaxResponse();
+            default:
+                throw new Exception(sprintf('Unsupported method: %s', $method));
+        }
     }
 
     /**
@@ -118,7 +120,7 @@ abstract class PageController extends SymfonyController
     /**
      * @return TranslatorInterface
      */
-    protected function getTranslator()
+    protected final function getTranslator()
     {
         return $this->translator;
     }
@@ -126,26 +128,15 @@ abstract class PageController extends SymfonyController
     /**
      * @return Language
      */
-    protected function getLanguage()
+    protected final function getLanguage()
     {
         return $this->get('language')->get($this->languageCode);
     }
 
     /**
-     * @return Language[]
-     */
-    private function getAvailableLanguages()
-    {
-        if ($this->availableLanguages === null) {
-            $this->availableLanguages = $this->get('language')->getActive();
-        }
-        return $this->availableLanguages;
-    }
-
-    /**
      * @return array
      */
-    private function getAllParameters()
+    protected final function getAllParameters()
     {
         return array_merge($this->getParameters(), [
             'view' => $this->getViewName(),
@@ -165,5 +156,48 @@ abstract class PageController extends SymfonyController
             'page_class' => $this->getPageClass(),
             'request_params' => $this->getRequestParams(),
         ]);
+    }
+
+    /**
+     * @return Language[]
+     */
+    private function getAvailableLanguages()
+    {
+        if ($this->availableLanguages === null) {
+            $this->availableLanguages = $this->get('language')->getActive();
+        }
+        return $this->availableLanguages;
+    }
+
+    /**
+     * @return Response
+     */
+    private function getIndexResponse()
+    {
+        $response = $this->render(
+            'AppBundle::page.html.twig',
+            $this->getAllParameters()
+        );
+        $response->headers->add([
+            'Content-Type' => 'text/html',
+            'charset' => 'utf-8',
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    private function getAjaxResponse()
+    {
+        $content = $this->render(
+            sprintf('@App/%s.html.twig', $this->getViewName()),
+            $this->getParameters()
+        )->getContent();
+
+        return new JsonResponse(
+            ['content' => $content] + $this->getAllParameters()
+        );
     }
 }

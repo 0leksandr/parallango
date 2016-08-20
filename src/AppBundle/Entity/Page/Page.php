@@ -81,13 +81,15 @@ class Page
                 $this->pages[] = new PaginationPage(
                     $this->parallango,
                     0,
-                    '<<',
+                    '&lt;&lt;',
+                    false,
                     false
                 );
                 $this->pages[] = new PaginationPage(
                     $this->parallango,
                     $this->pageNumber - 1,
-                    '<',
+                    '&lt;',
+                    false,
                     false
                 );
             }
@@ -114,7 +116,8 @@ class Page
                     $this->parallango,
                     $pageNumber,
                     $pageNumber + 1,
-                    $pageNumber === $this->pageNumber
+                    $pageNumber === $this->pageNumber,
+                    $pageNumber > $this->pageNumber
                 );
             }
 
@@ -122,14 +125,16 @@ class Page
                 $this->pages[] = new PaginationPage(
                     $this->parallango,
                     $this->pageNumber + 1,
-                    '>',
-                    false
+                    '&gt;',
+                    false,
+                    true
                 );
                 $this->pages[] = new PaginationPage(
                     $this->parallango,
                     $last,
-                    '>>',
-                    false
+                    '&gt;&gt;',
+                    false,
+                    true
                 );
             }
         }

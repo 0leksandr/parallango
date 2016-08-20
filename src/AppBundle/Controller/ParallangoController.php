@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Page\Page;
 use AppBundle\Entity\Parallango\Parallango;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ParallangoController extends PageController
 {
@@ -89,19 +88,6 @@ class ParallangoController extends PageController
             ->getById($request->get('parallangoId'));
         $this->pageNumber =
             (intval($request->get('pageNumber')) ?: 1) - 1;
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function ajaxAction(Request $request)
-    {
-        $this->initialize($request);
-        return $this->render(
-            '@App/book.html.twig',
-            ['page' => $this->getPage()]
-        );
     }
 
     /**

@@ -27,20 +27,13 @@ section:
 parallango1:
     path: /book/{parallangoId}
     defaults: { _controller: AppBundle:Parallango:index }
-    methods: [GET]
+    methods: [GET, POST]
     requirements:
         parallangoId: \d+
 parallango2:
     path: /book/{parallangoId}/{pageNumber}
     defaults: { _controller: AppBundle:Parallango:index }
-    methods: [GET]
-    requirements:
-        parallangoId: \d+
-        pageNumber: \d+
-parallango_ajax:
-    path: /book/{parallangoId}/{pageNumber}
-    defaults: { _controller: AppBundle:Parallango:ajax }
-    methods: [POST]
+    methods: [GET, POST]
     requirements:
         parallangoId: \d+
         pageNumber: \d+

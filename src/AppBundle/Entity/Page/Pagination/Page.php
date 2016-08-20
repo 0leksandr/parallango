@@ -14,23 +14,28 @@ class Page
     private $text;
     /** @var bool */
     private $isActive;
+    /** @var bool */
+    private $isNext;
 
     /**
      * @param Parallango $parallango
      * @param int $number
      * @param string $text
      * @param bool $isActive
+     * @param bool $isNext
      */
     public function __construct(
         Parallango $parallango,
         $number,
         $text,
-        $isActive
+        $isActive,
+        $isNext
     ) {
         $this->parallango = $parallango;
         $this->number = $number;
         $this->text = $text;
         $this->isActive = $isActive;
+        $this->isNext = $isNext;
     }
 
     /**
@@ -63,5 +68,13 @@ class Page
     public function isActive()
     {
         return $this->isActive;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNext()
+    {
+        return $this->isNext;
     }
 }

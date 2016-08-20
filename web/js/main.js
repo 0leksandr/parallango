@@ -35,14 +35,12 @@ function onReady (callback) {
     if (callback) {
         onReadyMethods.push(callback);
     } else {
-        for (var method in onReadyMethods) {
-            runIf(method); // TODO: check
+        for (var index in onReadyMethods) {
+            var method = onReadyMethods[index];
+            runIf(method);
         }
     }
 }
-//$(document).ready(function () {
-    onReady();
-//});
 
 function wrap ($element, $container) {
     $container = or($container, $('<div></div>'));
@@ -63,18 +61,4 @@ function scrollTop (callback) {
         200,
         runIf(callback)
     );
-}
-
-function runWhen (condition, callback, timeoutMilliseconds) {
-    if (condition()) {
-        callback();
-    } else {
-        var refreshIntervalId = 0;
-        refreshIntervalId = setInterval(function () {
-            if (condition()) {
-                callback();
-                clearInterval(refreshIntervalId);
-            }
-        }, timeoutMilliseconds);
-    }
 }
