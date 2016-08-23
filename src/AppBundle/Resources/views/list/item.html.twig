@@ -1,7 +1,7 @@
 {#require: href, text, additional, nofollow#}
 
 <div class="item">
-    <a href="{{ href }}" onclick="goto_item($(this).parent())"
+    <a href="{{ href }}"
         {% if nofollow %}
             rel="nofollow"
         {% endif %}

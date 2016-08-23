@@ -77,7 +77,7 @@ class ParallangoController extends PageController
      */
     protected function getJavaScripts()
     {
-        return ['ajax-link'];
+        return [];
     }
 
     protected function initialize(Request $request)
