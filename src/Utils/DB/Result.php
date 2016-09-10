@@ -104,14 +104,6 @@ class Result
     }
 
     /**
-     * @return int
-     */
-    public function count()
-    {
-        return $this->statement->rowCount();
-    }
-
-    /**
      * @param string $indexColumn
      * @return ResultBatchIndexed
      */
