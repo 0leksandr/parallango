@@ -2,6 +2,7 @@
 
 namespace Base\Commands;
 
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -59,41 +60,61 @@ SQL
             );
         }
 
-        $this->executePhp($pageSizes, $output);
+        $milestones = $this->getAllMilestones(
+            $pageSizes,
+            new ProgressBar($output)
+        );
+        $output->writeln('');
+        $this->insertMilestones($milestones, new ProgressBar($output));
+        $output->writeln('');
 
         return 0;
     }
 
     /**
      * @param int[] $pageSizes
-     * @param OutputInterface $output
+     * @param ProgressBar $progress
+     * @return array[]
+     * @throws Exception
      */
-    private function executePhp(array $pageSizes, OutputInterface $output)
+    private function getAllMilestones(array $pageSizes, ProgressBar $progress)
     {
-        $progress = new ProgressBar($output);
-        $progress->start(count($pageSizes) * $this->sql->getSingle(
+        $nrParallangos = $this->sql->getSingle(
             <<<'SQL'
             SELECT COUNT(*)
             FROM parallangos
 SQL
-        ));
+        );
+        if ($this->sql->getSingle(
+            <<<'SQL'
+            SELECT COUNT(DISTINCT parallango_id)
+            FROM paragraphs
+SQL
+        ) !== $nrParallangos) {
+            throw new Exception('Numbers of paragraphs do not match');
+        }
+
+        $progress->start(count($pageSizes) * $nrParallangos);
         $milestones = [];
+        $paragraphsStmt = $this->sql->prepare(
+            <<<'SQL'
+            SELECT
+                id,
+                parallango_id,
+                position_end
+            FROM
+                paragraphs
+            ORDER BY
+                parallango_id,
+                id
+SQL
+        );
         foreach ($pageSizes as $pageSize) {
             $pageSizeId = $this->getPageSizeId($pageSize);
             $this->deletePreviouslyCreatedPages($pageSizeId);
-            $paragraphsRes = $this->sql->prepare(
-                <<<'SQL'
-                SELECT
-                    id,
-                    parallango_id,
-                    position_end
-                FROM
-                    paragraphs
-                ORDER BY
-                    parallango_id,
-                    id
-SQL
-            )->execute()->getResultBatchIndexed('parallango_id');
+            $paragraphsRes = $paragraphsStmt
+                ->execute()
+                ->getResultBatchIndexed('parallango_id');
             while ($paragraphs = $paragraphsRes->fetchBatchArray()) {
                 $parallangoId = head($paragraphs)['parallango_id'];
                 $milestones = array_merge($milestones, array_map(
@@ -110,9 +131,8 @@ SQL
             }
         }
         $progress->finish();
-        $output->writeln('');
-        $this->insertMilestones($milestones, new ProgressBar($output));
-        $output->writeln('');
+
+        return $milestones;
     }
 
     /**
