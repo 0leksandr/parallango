@@ -1,8 +1,43 @@
-specified_language:
-    prefix: /{_locale}
-    resource: routes.yml
+home:
+    path: /
+    defaults: { _controller: AppBundle:HomePage:index }
+
+feedback:
+    path: /feedback
+    defaults: { _controller: AppBundle:Feedback:save }
+
+registration:
+    path: /registration
+    defaults: { _controller: AppBundle:Registration:registerUser }
+
+author:
+    path: /author/{authorId}
+    defaults: { _controller: AppBundle:Author:index }
+    methods: [GET]
     requirements:
-        _locale: "|en|ru" #http://stackoverflow.com/questions/7903477/symfony2-default-locale-in-routing
+        authorId: \d+
+
+section:
+    path: /section/{sectionId}
+    defaults: { _controller: AppBundle:Section:index }
+    methods: [GET]
+    requirements:
+        sectionId: \d+
+
+parallango:
+    path: /book/{parallangoId}
+    defaults: { _controller: AppBundle:Parallango:index }
+    methods: [GET]
+    requirements:
+        parallangoId: \d+
+
+language_aware:
+    path: /{_locale}{path}
+    defaults: { _controller: AppBundle:LanguageAware:forward }
+    methods: [GET]
+    requirements:
+        _locale: en|ru
+        path: .*
 
 items:
     path: /{languageCode}/{itemsType}/{offset}
