@@ -137,26 +137,36 @@ abstract class PageController extends Controller
     /**
      * @return array
      */
-    protected final function getAllParameters()
+    private function getAllParameters()
     {
-        return array_merge($this->getParameters(), [
-            'view' => $this->getViewName(),
-            'is_desktop_version' => $this->isDesktopVersion,
-            'language' => $this->getLanguage(),
-            'available_languages' => $this->getAvailableLanguages(),
-            'title' => $this->getPageTitle(),
-            'keywords' => implode(
-                ', ',
-                array_map('trim', $this->getKeywords())
-            ),
-            'description' => $this->getDescription(),
-            'robots' => $this->getRobots(),
-            'stylesheets' => ['style.css'] + $this->getStylesheets(),
-            'scripts' => $this->getJavaScripts(),
-            'path_static' => 'http://localhost:8000',
-            'page_class' => $this->getPageClass(),
-            'request_params' => $this->getRequestParams(),
-        ]);
+        return array_merge(
+            $this->getParameters(),
+            $this->getTitleParameters(),
+            [
+                'view' => $this->getViewName(),
+                'is_desktop_version' => $this->isDesktopVersion,
+                'language' => $this->getLanguage(),
+                'available_languages' => $this->getAvailableLanguages(),
+                'keywords' => implode(
+                    ', ',
+                    array_map('trim', $this->getKeywords())
+                ),
+                'description' => $this->getDescription(),
+                'robots' => $this->getRobots(),
+                'stylesheets' => ['style.css'] + $this->getStylesheets(),
+                'scripts' => $this->getJavaScripts(),
+                'page_class' => $this->getPageClass(),
+                'request_params' => $this->getRequestParams(),
+            ]
+        );
+    }
+
+    /**
+     * @return array
+     */
+    private function getTitleParameters()
+    {
+        return ['title' => $this->getPageTitle()];
     }
 
     /**
@@ -176,7 +186,7 @@ abstract class PageController extends Controller
     private function getIndexResponse()
     {
         $response = $this->render(
-            'AppBundle::page.html.twig',
+            $this->getHtmlFileLocation('page'),
             $this->getAllParameters()
         );
         $response->headers->add([
@@ -192,14 +202,26 @@ abstract class PageController extends Controller
      */
     private function getAjaxResponse()
     {
-        $parameters = $this->getAllParameters();
+        $content = $this
+            ->render(
+                $this->getHtmlFileLocation($this->getViewName()),
+                $this->getAllParameters()
+            )
+            ->getContent();
 
-        $content = $this->render(
-            sprintf('@App/%s.html.twig', $this->getViewName()),
-            $parameters
-        )->getContent();
+        return new JsonResponse(array_merge(
+            ['content' => $content],
+            $this->getTitleParameters()
+        ));
+    }
 
-        return new JsonResponse(['content' => $content] + $parameters);
+    /**
+     * @param string $viewName
+     * @return string
+     */
+    private function getHtmlFileLocation($viewName)
+    {
+        return sprintf('@App/%s.html.twig', $viewName); // 'AppBundle::%s.html.twig'
     }
 
     /**
