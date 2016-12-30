@@ -192,14 +192,14 @@ abstract class PageController extends Controller
      */
     private function getAjaxResponse()
     {
+        $parameters = $this->getAllParameters();
+
         $content = $this->render(
             sprintf('@App/%s.html.twig', $this->getViewName()),
-            $this->getParameters()
+            $parameters
         )->getContent();
 
-        return new JsonResponse(
-            ['content' => $content] + $this->getAllParameters()
-        );
+        return new JsonResponse(['content' => $content] + $parameters);
     }
 
     /**

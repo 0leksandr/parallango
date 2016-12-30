@@ -13,28 +13,28 @@ registration:
 author:
     path: /author/{authorId}
     defaults: { _controller: AppBundle:Author:index }
-    methods: [GET]
+    methods: [GET, POST]
     requirements:
         authorId: \d+
 
 section:
     path: /section/{sectionId}
     defaults: { _controller: AppBundle:Section:index }
-    methods: [GET]
+    methods: [GET, POST]
     requirements:
         sectionId: \d+
 
 parallango:
     path: /book/{parallangoId}
     defaults: { _controller: AppBundle:Parallango:index }
-    methods: [GET]
+    methods: [GET, POST]
     requirements:
         parallangoId: \d+
 
 language_aware:
     path: /{_locale}{path}
     defaults: { _controller: AppBundle:LanguageAware:forward }
-    methods: [GET]
+    methods: [GET, POST]
     requirements:
         _locale: en|ru
         path: .*
