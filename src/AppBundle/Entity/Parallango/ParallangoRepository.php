@@ -95,11 +95,11 @@ SQL
                     FROM books
                     WHERE author_id = :author_id_1
                 )
-#                 AND right_book_id IN (
-#                     SELECT id
-#                     FROM books
-#                     WHERE author_id = :author_id_2
-#                 )
+                AND right_book_id IN ( # TODO: remove
+                    SELECT id
+                    FROM books
+                    WHERE author_id = :author_id_2
+                )
 SQL
             ,
             [
