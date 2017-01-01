@@ -3,31 +3,36 @@
 namespace AppBundle\Controller;
 
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class ItemsController extends Controller
+class ItemsController extends ToListItemConvertibleController
 {
+    const NR_ITEMS = 50;
+
     /**
-     * @param string $languageCode
      * @param string $itemsType
      * @param int $offset
      * @return Response
      * @throws Exception
      */
-    public function indexAction($languageCode, $itemsType, $offset)
+    public function indexAction($itemsType, $offset)
     {
-        $nrItems = 50;
+        $nrItems = self::NR_ITEMS;
         $offset *= $nrItems;
         switch ($itemsType) {
-            case 'author':
-                $items = $this->get('author')->getAll($nrItems, $offset);
+            case 'authors':
+                $authors = $this->get('author')->getAll($nrItems, $offset);
+                $items = $this->authorsToListItems($authors);
                 break;
-            case 'section':
-                $items = $this->get('section')->getAll($nrItems, $offset);
+            case 'sections':
+                $sections = $this->get('section')->getAll($nrItems, $offset);
+                $items = $this->sectionsToListItems($sections);
                 break;
-            case 'parallango':
-                $items = $this->get('parallango')->getAll($nrItems, $offset);
+            case 'books':
+                $parallangos = $this
+                    ->get('parallango')
+                    ->getAll($nrItems, $offset);
+                $items = $this->parallangosToListItems($parallangos);
                 break;
             default:
                 throw new Exception(sprintf(
@@ -37,9 +42,7 @@ class ItemsController extends Controller
 
         return $this->render('@App/list/items.html.twig', [
             'items' => $items,
-            'type' => $itemsType, // TODO: detect automatically based on items
-            'language' => $this->get('language')->get($languageCode),
-            'nofollow' => true, // TODO: ???
+            'nofollow' => false, // TODO: ???
         ]);
     }
 }

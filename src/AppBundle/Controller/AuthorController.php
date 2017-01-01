@@ -23,11 +23,8 @@ class AuthorController extends PageController
      */
     protected function getParameters()
     {
-        return [
-            'parallangos' => $this
-                ->get('parallango')
-                ->getByAuthor($this->author),
-        ];
+        $parallangos = $this->get('parallango')->getByAuthor($this->author);
+        return ['parallangos_list' => $this->getItemsList($parallangos)];
     }
 
     /**
@@ -35,7 +32,7 @@ class AuthorController extends PageController
      */
     protected function getPageTitle()
     {
-        $this->getTranslator()->trans(
+        return $this->getTranslator()->trans(
             'author-page-title',
             ['%1%' => $this->author->getName($this->getLanguage())] // TODO: make it right
         );

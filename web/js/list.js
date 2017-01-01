@@ -1,5 +1,3 @@
-/* global languageCode */
-
 (function () {
     function offsetBottom () {
         return $(window).scrollTop() + windowHeight();
@@ -81,8 +79,7 @@
             };
 
             loading = true;
-            var uri = "/" + languageCode + "/" + $elem.data("type") + "/" +
-                (curIndex + 1);
+            var uri = $elem.data("upload-url-prefix") + (curIndex + 1);
             $.post(uri).success(function (response) {
                 var $response = $(filterEmptyNodes($(response)));
                 if ($response.size() === 0) {

@@ -1,9 +1,0 @@
-{#{% extends "item.html.twig" %}#}
-{#require: author, language, nofollow#}
-
-{% include "@App/list/item.html.twig" with {
-    href: "/author/" ~ author.id,
-    text: author.name(language),
-    additional: author.nrBooks,
-    nofollow: nofollow
-} %}

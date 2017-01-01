@@ -40,10 +40,9 @@ language_aware:
         path: .*
 
 items:
-    path: /{languageCode}/{itemsType}/{offset}
+    path: /{itemsType}/{offset}
     defaults: { _controller: AppBundle:Items:index }
     methods: [POST]
     requirements:
-        languageCode: (en|ru)
-        itemsType: (author|section|parallango)
+        itemsType: authors|sections|books
         offset: \d+

@@ -28,31 +28,6 @@
 {% set active = false %}
 {% set nofollow = false %}
 
-{# TODO: use "type" based on class of items #}
-{# TODO: remove "id" #}
-{% include "@App/list/list.html.twig" with {
-	header: "items-header-authors"|trans,
-	items: authors,
-	type: "author",
-	active: active,
-	id: "authors",
-	nofollow: nofollow
-} %}
-
-{% include "@App/list/list.html.twig" with {
-	header: "items-header-sections"|trans,
-	items: sections,
-	type: "section",
-	active: active,
-	id: "sections",
-	nofollow: nofollow
-} %}
-
-{% include "@App/list/list.html.twig" with {
-	header: "items-header-books"|trans,
-	items: parallangos,
-	type: "parallango",
-	active: active,
-	id: "parallangos",
-	nofollow: nofollow
-} %}
+{% include "@App/list/list.html.twig" with {list: authors_list} %}
+{% include "@App/list/list.html.twig" with {list: sections_list} %}
+{% include "@App/list/list.html.twig" with {list: parallangos_list} %}

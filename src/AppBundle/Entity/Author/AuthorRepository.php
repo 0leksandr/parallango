@@ -8,6 +8,7 @@ use Utils\DB\SQL;
 
 /**
  * @method Author getById($id)
+ * @method Author[] getBySelectIdsQuery($query, array $params = [])
  */
 class AuthorRepository extends AbstractSqlRepository
 {

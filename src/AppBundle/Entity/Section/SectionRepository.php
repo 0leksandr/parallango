@@ -8,6 +8,7 @@ use Utils\DB\SQL;
 
 /**
  * @method Section getById($id)
+ * @method Section[] getBySelectIdsQuery($query, array $params = [])
  */
 class SectionRepository extends AbstractSqlRepository
 {

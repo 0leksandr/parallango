@@ -23,11 +23,8 @@ class SectionController extends PageController
      */
     protected function getParameters()
     {
-        return [
-            'parallangos' => $this
-                ->get('parallango')
-                ->getBySection($this->section),
-        ];
+        $parallangos = $this->get('parallango')->getBySection($this->section);
+        return ['parallangos_list' => $this->getItemsList($parallangos)];
     }
 
     /**

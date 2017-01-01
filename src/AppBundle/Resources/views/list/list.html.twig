@@ -1,10 +1,10 @@
-{#require: id, active, header, items, type, language, nofollow#}
-
 <div
-    class="list {% if active %}active{% else %}inactive{% endif %} loadable"
-    id="{{ id }}"
-    data-type="{{ type }}"
-    {#".private_loadable_descriptor($id,array("where"=>$where,"order"=>$order))."#}
+    class="
+        list
+        {% if list.active %} active {% else %} inactive {% endif %}
+        loadable
+    "
+    data-upload-url-prefix="{{ list.uploadUrlPrefix }}"
 >
     <h1 class="items_header">
         <a
@@ -14,7 +14,7 @@
             {#}) }}"#}
             {#onclick="switch_to_list($(this).parent().parent())"#}
         >
-            {{ header }}
+            {{ list.header }}
             <div
                 class="item_corner"
                 style="border-color:{{ random_color() }};"
@@ -23,10 +23,8 @@
     </h1>
     <div class="items">
         {% include '@App/list/items.html.twig' with {
-            items: items,
-            type: type,
-            language: language,
-            nofollow: nofollow
+            items: list.items,
+            nofollow: list.nofollow
         } %}
         <div class="af"></div>
     </div>

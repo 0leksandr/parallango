@@ -11,6 +11,7 @@ use Utils\DB\SQL;
 /**
  * @method Parallango getById($id)
  * @method Parallango[] getBySelectIdsQuery($query, array $params = [])
+ * @method Parallango getSingleBySelectIdQuery($query, array $params = [])
  */
 class ParallangoRepository extends AbstractSqlRepository
 {
@@ -164,6 +165,7 @@ SQL
                 right_book_id
             FROM parallangos
             WHERE id IN :ids
+            ORDER BY id
             LIMIT :LIMIT OFFSET :offset
 SQL;
     }

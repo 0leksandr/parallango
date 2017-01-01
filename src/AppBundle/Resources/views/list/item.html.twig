@@ -1,18 +1,14 @@
-{#require: href, text, additional, nofollow#}
-
 <div class="item">
-    <a href="{{ href }}"
-        {% if nofollow %}
-            rel="nofollow"
-        {% endif %}
-    >
+    <a href="{{ item.url }}" {% if nofollow %} rel="nofollow" {% endif %}>
         <div class="item_content">
             <table>
                 <tr>
                     <td>
-                        {{ text }}
-                        {% if additional is not empty %}
-                            <span class="additional">({{ additional }})</span>
+                        {{ item.text }}
+                        {% if item.additional is not empty %}
+                            <span class="additional">
+                                ({{ item.additional }})
+                            </span>
                         {% endif %}
                     </td>
                 </tr>

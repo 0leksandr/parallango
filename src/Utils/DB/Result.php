@@ -121,6 +121,15 @@ class Result
     }
 
     /**
+     * @param callable $function
+     * @return array
+     */
+    public function map(callable $function)
+    {
+        return array_map($function, $this->getArray());
+    }
+
+    /**
      * @param string[] $row
      * @return array
      */

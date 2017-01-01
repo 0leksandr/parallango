@@ -2,15 +2,18 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Author\Author;
+use AppBundle\Entity\ItemsList\ItemsList;
 use AppBundle\Entity\Language\Language;
+use AppBundle\Entity\Parallango\Parallango;
+use AppBundle\Entity\Section\Section;
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\TranslatorInterface;
 
-abstract class PageController extends Controller
+abstract class PageController extends ToListItemConvertibleController
 {
     /** @var Language[] */
     private $availableLanguages;
@@ -82,7 +85,6 @@ abstract class PageController extends Controller
     public final function indexAction(Request $request)
     {
         $this->initialize($request);
-        $this->setCurrentLanguage($request);
         $method = $request->getMethod();
         switch ($method) {
             case Request::METHOD_GET:
@@ -116,6 +118,9 @@ abstract class PageController extends Controller
     protected function initialize(Request $request)
     {
         $this->translator = $this->get('translator');
+
+        $language = $this->get('language')->get($request->getLocale());
+        $this->container->set('language.current', $language);
     }
 
     /**
@@ -132,6 +137,43 @@ abstract class PageController extends Controller
     protected final function getLanguage()
     {
         return $this->get('language')->get($this->languageCode);
+    }
+
+    /**
+     * @param array $items
+     * @return ItemsList
+     * @throws Exception
+     */
+    protected function getItemsList(array $items)
+    {
+        $translator = $this->get('translator');
+        $class = get_class(head($items));
+        switch ($class) {
+            case Author::class:
+                $header = $translator->trans('items-header-authors');
+                $listItems = $this->authorsToListItems($items);
+                $itemsType = 'authors';
+                break;
+            case Section::class:
+                $header = $translator->trans('items-header-sections');
+                $listItems = $this->sectionsToListItems($items);
+                $itemsType = 'sections';
+                break;
+            case Parallango::class:
+                $header = $translator->trans('items-header-books');
+                $listItems = $this->parallangosToListItems($items);
+                $itemsType = 'books';
+                break;
+            default:
+                throw new Exception(sprintf('Unknown class: %s', $class));
+        }
+        return new ItemsList(
+            false,
+            $header,
+            $listItems,
+            $this->getListUploadUrlPrefix($itemsType),
+            false
+        );
     }
 
     /**
@@ -225,11 +267,19 @@ abstract class PageController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param string $itemsType
+     * @return string
      */
-    private function setCurrentLanguage(Request $request)
+    private function getListUploadUrlPrefix($itemsType)
     {
-        $language = $this->get('language')->get($request->getLocale());
-        $this->container->set('language.current', $language);
+        $dummyOffset = 0;
+        $uploadUrl = $this->get('router')->generate('items', [
+            'itemsType' => $itemsType,
+            'offset' => $dummyOffset,
+        ]);
+        return _preg_match(
+            sprintf('#^(.*/)%d/?$#', $dummyOffset),
+            $uploadUrl
+        )[1];
     }
 }
