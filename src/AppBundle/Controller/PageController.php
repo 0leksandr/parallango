@@ -4,13 +4,13 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Language\Language;
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller as SymfonyController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\TranslatorInterface;
 
-abstract class PageController extends SymfonyController
+abstract class PageController extends Controller
 {
     /** @var Language[] */
     private $availableLanguages;
@@ -82,11 +82,12 @@ abstract class PageController extends SymfonyController
     public final function indexAction(Request $request)
     {
         $this->initialize($request);
+        $this->setCurrentLanguage($request);
         $method = $request->getMethod();
         switch ($method) {
-            case 'GET':
+            case Request::METHOD_GET:
                 return $this->getIndexResponse();
-            case 'POST':
+            case Request::METHOD_POST:
                 return $this->getAjaxResponse();
             default:
                 throw new Exception(sprintf('Unsupported method: %s', $method));
@@ -199,5 +200,14 @@ abstract class PageController extends SymfonyController
         return new JsonResponse(
             ['content' => $content] + $this->getAllParameters()
         );
+    }
+
+    /**
+     * @param Request $request
+     */
+    private function setCurrentLanguage(Request $request)
+    {
+        $language = $this->get('language')->get($request->getLocale());
+        $this->container->set('language.current', $language);
     }
 }

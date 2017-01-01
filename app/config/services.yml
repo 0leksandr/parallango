@@ -39,3 +39,8 @@ services:
         class: AppBundle\Resources\Twig\RandomColorExtension
         tags:
             - { name: twig.extension }
+
+    language.current:
+        class: AppBundle\Entity\Language\Language
+        factory: ['@language', 'get']
+        arguments: ['en']
