@@ -2,38 +2,38 @@ services:
     sql:
         class: Utils\DB\SQL
         arguments:
-            - %database_host%
-            - %database_name%
-            - %database_user%
-            - %database_password%
+            - '%database_host%'
+            - '%database_name%'
+            - '%database_user%'
+            - '%database_password%'
 
     language:
         class: AppBundle\Entity\Language\LanguageRepository
-        arguments: [@sql]
+        arguments: ['@sql']
 
     author:
         class: AppBundle\Entity\Author\AuthorRepository
-        arguments: [@sql, @language]
+        arguments: ['@sql', '@language']
 
     section:
         class: AppBundle\Entity\Section\SectionRepository
-        arguments: [@sql, @language]
+        arguments: ['@sql', '@language']
 
     book:
         class: AppBundle\Entity\Book\BookRepository
-        arguments: [@sql, @author, @language, @section]
+        arguments: ['@sql', '@author', '@language', '@section']
 
     parallango:
         class: AppBundle\Entity\Parallango\ParallangoRepository
-        arguments: [@sql, @book]
+        arguments: ['@sql', '@book']
 
     page_size:
         class: AppBundle\Entity\Page\PageSize\PageSizeRepository
-        arguments: [@sql]
+        arguments: ['@sql']
 
     page:
         class: AppBundle\Entity\Page\PageRepository
-        arguments: [@sql, %books_root%]
+        arguments: ['@sql', '%books_root%']
 
     twig.random_color:
         class: AppBundle\Resources\Twig\RandomColorExtension
