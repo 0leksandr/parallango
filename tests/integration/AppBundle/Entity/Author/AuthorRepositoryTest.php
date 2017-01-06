@@ -23,12 +23,16 @@ class AuthorRepositoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function all_authors_should_have_name()
+    public function all_authors_should_have_unique_name()
     {
         foreach ($this->languageRepo->getActive() as $language) {
-            foreach ($this->SUT->getAll() as $author) {
-                $this->assertNotEmpty($author->getName($language));
-            }
+            $names = array_map(function (Author $author) use ($language) {
+                $name = $author->getName($language);
+                $this->assertNotEmpty($name);
+                return $name;
+            }, $this->SUT->getAll());
+
+            $this->assertSame($names, array_unique($names));
         }
     }
 }
