@@ -29,13 +29,15 @@ class BookRepositoryTest extends PHPUnit_Framework_TestCase
             );
         }, $books);
 
-        $repeats = array_count_values($authorTitles);
-        $this->assertEquals(1, max($repeats), sprintf(
-            'Repeated: %s',
-            print_r(array_filter($repeats, function ($int) {
-                return $int !== 1;
-            }), true)
-        ));
+        $this->assertSame(
+            [],
+            array_filter(
+                array_count_values($authorTitles),
+                function ($int) {
+                    return $int > 1;
+                }
+            )
+        );
 
         $this->assertEquals(
             count($books),
