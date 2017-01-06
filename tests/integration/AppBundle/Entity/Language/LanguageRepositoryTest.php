@@ -19,7 +19,7 @@ class LanguageRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function allLanguagesShouldHaveUniqueCode()
+    public function all_languages_should_have_unique_code()
     {
         $languages = $this->SUT->getAll();
         $this->assertGreaterThan(0, count($languages));
@@ -32,7 +32,7 @@ class LanguageRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function thereShouldBeActiveLanguages()
+    public function there_should_be_active_languages()
     {
         $nrActiveLanguages = array_sum(array_map(
             function (Language $language) {

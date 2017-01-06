@@ -18,7 +18,7 @@ class BookRepositoryTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function allBooksShouldHaveUniqueTitleAndAuthor()
+    public function all_books_should_have_unique_title_and_author()
     {
         $books = $this->SUT->getAll();
         $authorTitles = array_map(function (Book $book) {

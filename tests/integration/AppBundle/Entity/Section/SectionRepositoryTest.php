@@ -17,7 +17,7 @@ class SectionRepositoryTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function allSectionsShouldHaveTitleInActiveLanguages()
+    public function all_sections_should_have_title_in_active_languages()
     {
         $languages =
             ServiceContainer::get('test')->get('language')->getActive();

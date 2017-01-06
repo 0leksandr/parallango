@@ -10,7 +10,7 @@ class NrBooksTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function allActiveAuthorsShouldHaveNrBooks()
+    public function all_active_authors_should_have_nr_books()
     {
         $serviceContainer = ServiceContainer::get('test');
         $languagePairs = $serviceContainer->get('language')->getPairs();

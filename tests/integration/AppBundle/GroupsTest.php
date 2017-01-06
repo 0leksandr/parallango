@@ -10,7 +10,7 @@ class GroupsTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function allBooksInGroupShouldHaveSameAuthor()
+    public function all_books_in_group_should_have_same_author()
     {
         // TODO: books in different languages should belong to different groups
         $booksGroups = array_reduce(

@@ -48,7 +48,7 @@ class SQLTest extends PHPUnit_Framework_TestCase
      * @param mixed $varValue
      * @param mixed|null $expectedReturnVar
      */
-    public function selectSomethingShouldReturnSame(
+    public function select_something_should_return_same(
         $varValue,
         $expectedReturnVar = null
     ) {
