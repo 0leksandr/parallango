@@ -31,6 +31,7 @@ class Seed extends Command
             new Books(),
             new Parallangos(),
             new Groups(),
+            new EntityTypes(),
         ];
         $progress = new ProgressBar($output);
         $progress->start(count($commands));

@@ -40,9 +40,23 @@ language_aware:
         path: .*
 
 items:
-    path: /{itemsType}/{offset}
-    defaults: { _controller: AppBundle:Items:index }
+    path: /items/{entityType}/{index} #TODO: use ids of entity_types
+    defaults: { _controller: AppBundle:ListItems:index }
+    methods: [POST] #TODO: use GET or something other?
+    requirements:
+        entityType: \w+
+        index: \d+
+    defaults:
+        index: 0
+
+items_related:
+    path: /items/{entityType}/{relatedEntity}/{relatedId}/{index}
+    defaults: { _controller: AppBundle:ListItems:index }
     methods: [POST]
     requirements:
-        itemsType: authors|sections|books
-        offset: \d+
+        entityType: \w+
+        relatedEntity: \w+
+        relatedId: \d+
+        index: \d+
+    defaults:
+        index: 0

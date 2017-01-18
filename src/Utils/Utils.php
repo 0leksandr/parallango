@@ -135,6 +135,18 @@ function array_mergev(array $array)
 }
 
 /**
+ * syntax sugar - array_map with different order of arguments
+ *
+ * @param array $objects
+ * @param callable $function
+ * @return array
+ */
+function map(array $objects, callable $function)
+{
+    return array_map($function, $objects);
+}
+
+/**
  * @param Request $request
  * @return string
  */

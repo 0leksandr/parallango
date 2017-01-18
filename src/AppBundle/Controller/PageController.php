@@ -8,12 +8,13 @@ use AppBundle\Entity\Language\Language;
 use AppBundle\Entity\Parallango\Parallango;
 use AppBundle\Entity\Section\Section;
 use Exception;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\TranslatorInterface;
 
-abstract class PageController extends ToListItemConvertibleController
+abstract class PageController extends Controller
 {
     /** @var Language[] */
     private $availableLanguages;
@@ -140,38 +141,30 @@ abstract class PageController extends ToListItemConvertibleController
     }
 
     /**
-     * @param array $items
+     * @param string $entityType
+     * @param string|null $relatedEntity
+     * @param int|null $relatedId
      * @return ItemsList
-     * @throws Exception
      */
-    protected function getItemsList(array $items)
-    {
-        $translator = $this->get('translator');
-        $class = get_class(head($items));
-        switch ($class) {
-            case Author::class:
-                $header = $translator->trans('items-header-authors');
-                $listItems = $this->authorsToListItems($items);
-                $itemsType = 'authors';
-                break;
-            case Section::class:
-                $header = $translator->trans('items-header-sections');
-                $listItems = $this->sectionsToListItems($items);
-                $itemsType = 'sections';
-                break;
-            case Parallango::class:
-                $header = $translator->trans('items-header-books');
-                $listItems = $this->parallangosToListItems($items);
-                $itemsType = 'books';
-                break;
-            default:
-                throw new Exception(sprintf('Unknown class: %s', $class));
-        }
+    protected function getItemsList(
+        $entityType,
+        $relatedEntity = null,
+        $relatedId = null
+    ) {
         return new ItemsList(
             false,
-            $header,
-            $listItems,
-            $this->getListUploadUrlPrefix($itemsType),
+            $this->getListHeader($entityType),
+            $this->get('list_item')->getListItems(
+                $entityType,
+                $relatedEntity,
+                $relatedId,
+                0
+            ),
+            $this->getListUploadUrlPrefix(
+                $entityType,
+                $relatedEntity,
+                $relatedId
+            ),
             false
         );
     }
@@ -267,18 +260,55 @@ abstract class PageController extends ToListItemConvertibleController
     }
 
     /**
-     * @param string $itemsType
+     * @param string $entityType
+     * @return string
+     * @throws Exception
+     */
+    private function getListHeader($entityType)
+    {
+        $translator = $this->get('translator');
+        switch ($entityType) {
+            case Author::ENTITY_TYPE:
+                return $translator->trans('items-header-authors');
+            case Section::ENTITY_TYPE:
+                return $translator->trans('items-header-sections');
+            case Parallango::ENTITY_TYPE:
+                return $translator->trans('items-header-books');
+        }
+        throw new Exception(sprintf(
+            'Unknown entity type: %s',
+            $entityType
+        ));
+    }
+
+    /**
+     * @param string $entityType
+     * @param string|null $relatedEntity
+     * @param int|null $relatedId
      * @return string
      */
-    private function getListUploadUrlPrefix($itemsType)
-    {
-        $dummyOffset = 0;
-        $uploadUrl = $this->get('router')->generate('items', [
-            'itemsType' => $itemsType,
-            'offset' => $dummyOffset,
-        ]);
+    private function getListUploadUrlPrefix(
+        $entityType,
+        $relatedEntity = null,
+        $relatedId = null
+    ) {
+        $router = $this->get('router');
+        $dummyIndex = 0;
+        if ($relatedEntity === null) {
+            $uploadUrl = $router->generate('items', [
+                'entityType' => $entityType,
+                'index' => $dummyIndex,
+            ]);
+        } else {
+            $uploadUrl = $router->generate('items_related', [
+                'entityType' => $entityType,
+                'relatedEntity' => $relatedEntity,
+                'relatedId' => $relatedId,
+                'index' => $dummyIndex,
+            ]);
+        }
         return _preg_match(
-            sprintf('#^(.*/)%d/?$#', $dummyOffset),
+            sprintf('#^(.*/)%d/?$#', $dummyIndex),
             $uploadUrl
         )[1];
     }

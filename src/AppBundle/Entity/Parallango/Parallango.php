@@ -11,6 +11,8 @@ use Exception;
 
 class Parallango extends Identifiable
 {
+    const ENTITY_TYPE = 'parallango';
+
     /** @var Book */
     private $left;
     /** @var Book */

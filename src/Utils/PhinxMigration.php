@@ -63,6 +63,12 @@ class Table extends \Phinx\Db\Table
             );
             unset($options['references']);
         }
+        if (isset($options['unique'])) {
+            if ($options['unique']) {
+                $this->addIndex($name, ['unique' => true]);
+            }
+            unset($options['unique']);
+        }
         if (!isset($options['null'])) {
             $options['null'] = false;
         }

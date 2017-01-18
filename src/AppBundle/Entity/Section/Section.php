@@ -8,6 +8,8 @@ use AppBundle\Entity\Language\MultiTranslation;
 
 class Section extends Identifiable
 {
+    const ENTITY_TYPE = 'section';
+
     /** @var MultiTranslation */
     private $title;
     /** @var int */

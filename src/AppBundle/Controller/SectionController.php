@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Parallango\Parallango;
 use AppBundle\Entity\Section\Section;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,8 +24,13 @@ class SectionController extends PageController
      */
     protected function getParameters()
     {
-        $parallangos = $this->get('parallango')->getBySection($this->section);
-        return ['parallangos_list' => $this->getItemsList($parallangos)];
+        return [
+            'parallangos_list' => $this->getItemsList(
+                Parallango::ENTITY_TYPE,
+                Section::ENTITY_TYPE,
+                $this->section->getId()
+            ),
+        ];
     }
 
     /**

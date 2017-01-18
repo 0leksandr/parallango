@@ -54,17 +54,6 @@
         };
 
         var load = function () {
-            var filterEmptyNodes = function (array) {
-                var res = [];
-                $(array).each(function (key) {
-                    var elem = array[key];
-                    if (elem.nodeName !== '#text' || elem.data.trim()) {
-                        res.push(elem);
-                    }
-                });
-                return res;
-            };
-
             var prepend = function ($newItems) {
                 var $container = $newItems.wrap();
                 $container.css({display: "hidden"});
@@ -81,7 +70,8 @@
             loading = true;
             var uri = $elem.data("upload-url-prefix") + (curIndex + 1);
             $.post(uri).success(function (response) {
-                var $response = $(filterEmptyNodes($(response)));
+                var $response = $(response);
+
                 if ($response.size() === 0) {
                     fullyLoaded = true;
                     return;
@@ -141,6 +131,7 @@
             var nrItems = $items.$().size();
             var containerHeight = itemHeight * nrItems;
 
+            // TODO: fix empty space under items
             //$items.$().each(function (index) {
             //    index++;
             //    var duration = index * durationMultiplier;

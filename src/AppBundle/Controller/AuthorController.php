@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Author\Author;
+use AppBundle\Entity\Parallango\Parallango;
 use Symfony\Component\HttpFoundation\Request;
 
 class AuthorController extends PageController
@@ -23,8 +24,13 @@ class AuthorController extends PageController
      */
     protected function getParameters()
     {
-        $parallangos = $this->get('parallango')->getByAuthor($this->author);
-        return ['parallangos_list' => $this->getItemsList($parallangos)];
+        return [
+            'parallangos_list' => $this->getItemsList(
+                Parallango::ENTITY_TYPE,
+                Author::ENTITY_TYPE,
+                $this->author->getId()
+            ),
+        ];
     }
 
     /**

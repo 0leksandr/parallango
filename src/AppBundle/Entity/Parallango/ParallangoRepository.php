@@ -81,9 +81,11 @@ SQL
 
     /**
      * @param Author $author
+     * @param int|null $limit
+     * @param int $offset
      * @return Parallango[]
      */
-    public function getByAuthor(Author $author)
+    public function getByAuthor(Author $author, $limit = null, $offset = 0)
     {
         return $this->getBySelectIdsQuery(
             <<<'SQL'
@@ -105,15 +107,19 @@ SQL
             [
                 'author_id_1' => $author->getId(),
                 'author_id_2' => $author->getId(), // TODO: remove
+                'LIMIT' => $limit,
+                'offset' => $offset,
             ]
         );
     }
 
     /**
      * @param Section $section
+     * @param int|null $limit
+     * @param int $offset
      * @return Parallango[]
      */
-    public function getBySection(Section $section)
+    public function getBySection(Section $section, $limit = null, $offset = 0)
     {
         return $this->getBySelectIdsQuery(
             <<<'SQL'
@@ -135,6 +141,8 @@ SQL
             [
                 'section_id_1' => $section->getId(),
                 'section_id_2' => $section->getId(), // TODO: fix
+                'LIMIT' => $limit,
+                'offset' => $offset,
             ]
         );
     }

@@ -7,6 +7,8 @@ use AppBundle\Entity\Language\Language;
 
 class Author extends Identifiable
 {
+    const ENTITY_TYPE = 'author';
+
     const NAME = 'name';
     // TODO: something with it
 //    const PSEUDONYM = 'pseudonym';

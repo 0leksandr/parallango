@@ -44,3 +44,12 @@ services:
         class: AppBundle\Entity\Language\Language
         factory: ['@language', 'get']
         arguments: ['en']
+
+    list_item:
+        class: AppBundle\Entity\ItemsList\ListItemsProvider
+        arguments:
+            - '@author'
+            - '@section'
+            - '@parallango'
+            - '@router'
+            - '@language.current'

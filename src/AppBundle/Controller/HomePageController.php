@@ -2,7 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Author\Author;
 use AppBundle\Entity\Language\Language;
+use AppBundle\Entity\Parallango\Parallango;
+use AppBundle\Entity\Section\Section;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class HomePageController extends PageController
@@ -20,17 +23,16 @@ class HomePageController extends PageController
      */
     protected function getParameters()
     {
-        $nrItems = 50;
-        $authors = $this->get('author')->getAll($nrItems);
-        $sections = $this->get('section')->getAll($nrItems);
-        $parallangos = $this->get('parallango')->getAll($nrItems);
-
         return
             $this->getPreview()
             + $this->getMobilePreview()
-            + ['authors_list' => $this->getItemsList($authors)]
-            + ['sections_list' => $this->getItemsList($sections)]
-            + ['parallangos_list' => $this->getItemsList($parallangos)];
+            + [
+                'authors_list' => $this->getItemsList(Author::ENTITY_TYPE),
+                'sections_list' => $this->getItemsList(Section::ENTITY_TYPE),
+                'parallangos_list' => $this->getItemsList(
+                    Parallango::ENTITY_TYPE
+                ),
+            ];
     }
 
     /**
