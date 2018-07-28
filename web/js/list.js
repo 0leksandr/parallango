@@ -94,6 +94,32 @@
             return offsetBottom() - elemOffsetBottom;
         };
 
+        var fixAbsolute = function ($items) {
+            $items.css({
+                "position":"absolute",
+                "top":-100
+            });
+        };
+
+        var unfixRelative = function ($items) {
+            var list_height=$elem.css("height");
+            $items.each(function(){
+                $(this).css({
+                    "position":"relative",
+                    "top":0
+                });
+                $(this).css({
+                    "top": inactive_items_position
+                        - $(this).offset().top
+                        + $elem.offset().top
+					    // +parseInt($(this).css("top")) //for any initial position
+                });
+            });
+            $elem.css({
+                "height": list_height
+            });
+        };
+
         var hide = function ($items, done_callback) {
             var options = {
                 duration: 5000,
@@ -126,35 +152,24 @@
             };
             $items = or($items, items());
             var $container = $items.$().parent();
+            // TODO: why bottom items are not in container?
+$container.css({border:"5px solid red"});
 
             var itemHeight = intval($items.first().css("height"));
-            var nrItems = $items.$().size();
-            var containerHeight = itemHeight * nrItems;
 
             // TODO: fix empty space under items
-            //$items.$().each(function (index) {
-            //    index++;
-            //    var duration = index * durationMultiplier;
-            //    $(this).css({
-            //        top: -index * itemHeight
-            //    }).animate(
-            //        {top: 0},
-            //        duration,
-            //        options.easing
-            //    );
-            //});
-            $items.$().css({top: 0});
-
-            var totalDuration = durationMultiplier * (nrItems + 1);
-            $container.animate(
-                {height: containerHeight},
-                totalDuration,
-                options.easing,
-                function () {
-                    //$elem.css({height: "auto"});
-                    runIf(done_callback);
-                }
-            );
+            $items.$().each(function (index) {
+               index++;
+               var duration = index * durationMultiplier;
+               $(this).css({
+                   top: -index * itemHeight
+               }).animate(
+                   {top: 0},
+                   duration,
+                   options.easing
+               );
+            });
+            // $items.$().css({top: 0});
 
             // TODO: move out of container
             $elem.removeClass("inactive").addClass("active");
